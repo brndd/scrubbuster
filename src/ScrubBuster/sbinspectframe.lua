@@ -1026,7 +1026,7 @@ function SBStatFrame_SetStat(frame, index)
 			frame.tooltip2 = frame.tooltip2.."\n"..format(STAT_BLOCK_TOOLTIP, totalStat*BLOCK_PER_STRENGTH);
 		end
 	elseif index == 3 then
-		local health = totalStat * 10 - 180;
+		local health = floor(totalStat) * 10 - 180;
 		frame.tooltip2 = format(frame.tooltip2, health);
 	elseif index == 2 then
 		local attackPower = StatLogic:GetAPFromAgi(totalStat, unitClassID);
@@ -1038,7 +1038,7 @@ function SBStatFrame_SetStat(frame, index)
 			frame.tooltip2 = format(frame.tooltip2, crit, armor);
 		end
 	elseif index == 4 then
-		local mana = totalStat * 15 - 280;
+		local mana = floor(totalStat) * 15 - 280;
 		local spellCrit = StatLogic:GetSpellCritFromInt(totalStat, unitClassID, level);
 		if ClassHasMana[unitClass] then
 			frame.tooltip2 = format(frame.tooltip2, mana, spellCrit);

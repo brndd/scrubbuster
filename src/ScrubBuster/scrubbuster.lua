@@ -917,22 +917,33 @@ function ScrubBuster:GetStats(target, spec)
 			["talentRank"] = 1; --since it'll work this way anyway and we don't have to restructure ou're systems :^)
 			["func"] = nil;
 		};
+		local temptable2 = {
+			["isTalent"] = true; --also this thing needs two effects, armor and stamina
+			["talentRank"] = 1;
+			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
+				local aura = { ["primary"] = {
+					["sta"] = { ["mult"] = 1.25 }
+				} };
+				return aura;
+			end
+		};
 		if level < 40 then
 			temptable["func"] = function(rank, stats, weaponStats, itemStats, level, special)
 				local aura = { ["defense"] = {
-					["armor"] = { ["posMod"] = itemStats["defense"]["armor"]["posMod"] * 1.8 }
+					["armor"] = { ["base"] = itemStats["defense"]["armor"]["posMod"] * 1.8 }
 				} };
 				return aura;
 			end
 		else
 			temptable["func"] = function(rank, stats, weaponStats, itemStats, level, special)
 				local aura = { ["defense"] = {
-					["armor"] = { ["posMod"] = itemStats["defense"]["armor"]["posMod"] * 4 }
+					["armor"] = { ["base"] = itemStats["defense"]["armor"]["posMod"] * 4 }
 				} };
 				return aura;
 			end
 		end
 		table.insert(auras[2], temptable);
+		table.insert(auras[1], temptable2);
 	end
 	
 	local temp = level;

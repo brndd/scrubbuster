@@ -4877,7 +4877,7 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 		["Toughness"] = {
 			["prio"] = 2,
 			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
-				local bonusarmor = itemStats["defense"]["armor"]["posMod"] or 0;
+				local bonusarmor = itemStats["defense"]["armor"]["posMod"];
 				local aura = { ["defense"] = { ["armor"] = { ["base"] = bonusarmor * 0.02 * rank } } };
 				return aura;
 			end
