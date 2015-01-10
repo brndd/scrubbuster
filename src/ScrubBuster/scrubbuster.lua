@@ -1,6 +1,6 @@
 --[[
-ScrubBuster by xarthasskrillexx
-Release 1
+ScrubBuster by burneddi
+Release whatever I'm not gonna do this release numbering shit
 ]]
 
 --Libraries
@@ -31,7 +31,7 @@ function ScrubBuster_OnEvent(event, ...)
 		if ScrubBuster.tempUnit then
 			local name = UnitName(ScrubBuster.tempUnit);
 			ScrubBuster.stats[name] = {};
-			ScrubBuster.stats[name]["level"], ScrubBuster.stats[name]["stats"], ScrubBuster.stats[name]["weaponStats"] = ScrubBuster:GetStats(ScrubBuster.tempUnit, ScrubBuster.tempSpecial);
+			ScrubBuster.stats[name]["level"], ScrubBuster.stats[name]["stats"], ScrubBuster.stats[name]["weaponStats"], ScrubBuster.stats[name]["itemStats"] = ScrubBuster:GetStats(ScrubBuster.tempUnit, ScrubBuster.tempSpecial);
 			ScrubBuster.tempUnit = nil;
 			ScrubBuster.tempSpecial = nil;
 			ScrubBuster_StatsDone(name);
@@ -269,11 +269,11 @@ function ScrubBuster:ScrubBust(target, refresh, special)
 	
 	if UnitIsUnit("player", target) then
 		ScrubBuster.stats[name] = {};
-		ScrubBuster.stats[name]["level"], ScrubBuster.stats[name]["stats"], ScrubBuster.stats[name]["weaponStats"] = ScrubBuster:GetStats(target, special);
+		ScrubBuster.stats[name]["level"], ScrubBuster.stats[name]["stats"], ScrubBuster.stats[name]["weaponStats"], ScrubBuster.stats[name]["itemStats"] = ScrubBuster:GetStats(target, special);
 		ScrubBuster_StatsDone(name);
 	elseif refresh then
 		ScrubBuster.stats[name] = {};
-		ScrubBuster.stats[name]["level"], ScrubBuster.stats[name]["stats"], ScrubBuster.stats[name]["weaponStats"] = ScrubBuster:GetStats(target, special);
+		ScrubBuster.stats[name]["level"], ScrubBuster.stats[name]["stats"], ScrubBuster.stats[name]["weaponStats"], ScrubBuster.stats[name]["itemStats"] = ScrubBuster:GetStats(target, special);
 		ScrubBuster_StatsDone(name);
 	else --it's an inspect target and we're not refreshing, so we need to wait for talents to be done
 		ScrubBuster.tempUnit = target;
@@ -371,11 +371,11 @@ IN OTHER WORDS:
 --result is 95% damage, not 94.5% damage.
 
 --Damage multipliers (offHandDamageMultiplier etc) are the other stat with special exception treatment
---For them, base, posMod, negMod aren't used, they only use the multiplier field.
 --Damage multipliers are a flat out multiplier for weapon damage, some talents and buffs
 --have it. On the character sheet it has special treatment (compared to other multipliers),
 --as any damage multipliers make the damage stat appear green and in the tooltip you'll
---see the multiplier as a percentage. The "mult" field for these should not be used.
+--see the multiplier as a percentage. These only use the "mult" field, and stack multiplicatively
+--(even though the UI might have you believe otherwise).
 
 --oh by the way for weapon damage "base" is base dmg + effect from attackpower etc.,
 --"posMod" is any positive buffs that may be picked up like sharpening stones or Brutal Earthstorm Diamond
@@ -903,9 +903,9 @@ function ScrubBuster:GetStats(target, spec)
 	--Add generic special stuff, like Berserker Stance crit, defensive stance damage reduction
 	if special["warriorStance"] == "defensive" then
 		local temp = stats["melee"];
-		temp["mainHandDamageMultiplier"]["base"] = temp["mainHandDamageMultiplier"]["base"] - 0.1;
-		temp["offHandDamageMultiplier"]["base"] = temp["offHandDamageMultiplier"]["base"] - 0.1;
-		stats["ranged"]["damageMultiplier"]["base"] = stats["ranged"]["damageMultiplier"]["base"] - 0.1;
+		temp["mainHandDamageMultiplier"]["mult"] = temp["mainHandDamageMultiplier"]["mult"] * 0.9;
+		temp["offHandDamageMultiplier"]["mult"] = temp["offHandDamageMultiplier"]["mult"] * 0.9;
+		stats["ranged"]["damageMultiplier"]["mult"] = stats["ranged"]["damageMultiplier"]["mult"] * 0.9;
 	elseif special["warriorStance"] == "berserker" then
 		stats["melee"]["critPercent"]["base"] = stats["melee"]["critPercent"]["base"] + 3;
 		stats["ranged"]["critPercent"]["base"] = stats["ranged"]["critPercent"]["base"] + 3;
@@ -1042,7 +1042,7 @@ function ScrubBuster:GetStats(target, spec)
 	
 	--Get defense from defense rating and add it to defense stat
 	local tempDefRating = stats["defense"]["defenseRating"]["base"] + stats["defense"]["defenseRating"]["posMod"] + stats["defense"]["defenseRating"]["negMod"];
-	local tempDefense = StatLogic:GetEffectFromRating(tempDefRating, CR_DEFENSE_SKILL, level);
+	local tempDefense = math.floor(StatLogic:GetEffectFromRating(tempDefRating, CR_DEFENSE_SKILL, level));
 	stats["defense"]["defense"]["posMod"] = stats["defense"]["defense"]["posMod"] + tempDefense;
 	
 	--Get dodge from dodge rating and add it to dodge percent stat
@@ -1077,7 +1077,7 @@ function ScrubBuster:GetStats(target, spec)
 	
 	--get expertise from expertise rating and add it to expertise stat
 	local tempExpRating = stats["melee"]["expertiseRating"]["base"] + stats["melee"]["expertiseRating"]["posMod"] + stats["melee"]["expertiseRating"]["negMod"];
-	local tempExp = StatLogic:GetEffectFromRating(tempExpRating, CR_EXPERTISE, level);
+	local tempExp = math.floor(StatLogic:GetEffectFromRating(tempExpRating, CR_EXPERTISE, level));
 	stats["melee"]["expertise"]["posMod"] = stats["melee"]["expertise"]["posMod"] + tempExp;
 	
 	--get physical hit chance from hit rating and add it to hit percent stat
@@ -1091,31 +1091,34 @@ function ScrubBuster:GetStats(target, spec)
 	stats["spell"]["hitPercent"]["base"] = stats["spell"]["hitPercent"]["base"] + tempSpellHit;
 
 	
+	--Add effect of defense skill on dodge, block and parry
+	local temp = stats["defense"]
+	local tempDefense = temp["defense"]["base"] + temp["defense"]["posMod"] + temp["defense"]["negMod"];
+	local tempDefEffect = (tempDefense - 70 * 5) * 0.04;
+	temp["dodgePercent"]["base"] = temp["dodgePercent"]["base"] + tempDefEffect;
+	temp["parryPercent"]["base"] = temp["parryPercent"]["base"] + tempDefEffect;
+	temp["blockPercent"]["base"] = temp["blockPercent"]["base"] + tempDefEffect;
+	
 	
 	--Add common expertise to mainhand and offhand expertises
 	local temp = stats["melee"]
-	for k,v in pairs(temp["mainHandExpertise"]) do
-		if k ~= "mult" then
-			v = v + temp["expertise"][k];
-		end
-	end
-	for k,v in pairs(temp["offHandExpertise"]) do
-		if k ~= "mult" then
-			v = v + temp["expertise"][k];
-		end
-	end
+	temp["mainHandExpertise"]["base"] = temp["mainHandExpertise"]["base"] + temp["expertise"]["base"];
+	temp["mainHandExpertise"]["posMod"] = temp["mainHandExpertise"]["posMod"] + temp["expertise"]["posMod"];
+	temp["mainHandExpertise"]["negMod"] = temp["mainHandExpertise"]["negMod"] + temp["expertise"]["negMod"];
+	temp["offHandExpertise"]["base"] = temp["offHandExpertise"]["base"] + temp["expertise"]["base"];
+	temp["offHandExpertise"]["posMod"] = temp["offHandExpertise"]["posMod"] + temp["expertise"]["posMod"];
+	temp["offHandExpertise"]["negMod"] = temp["offHandExpertise"]["negMod"] + temp["expertise"]["negMod"];
 	
+
 	--Add common physical hit chance to melee and ranged hit chances
-	for k,v in pairs(stats["melee"]["hitPercent"]) do
-		if k ~= "mult" then
-			v = v + stats["physical"]["hitPercent"][k];
-		end
-	end
-	for k,v in pairs(stats["ranged"]["hitPercent"]) do
-		if k ~= "mult" then
-			v = v + stats["physical"]["hitPercent"][k];
-		end
-	end
+	temp["hitPercent"]["base"] = temp["hitPercent"]["base"] + stats["physical"]["hitPercent"]["base"];
+	temp["hitPercent"]["posMod"] = temp["hitPercent"]["posMod"] + stats["physical"]["hitPercent"]["posMod"];
+	temp["hitPercent"]["negMod"] = temp["hitPercent"]["negMod"] + stats["physical"]["hitPercent"]["negMod"];
+	local temp = stats["ranged"];
+	temp["hitPercent"]["base"] = temp["hitPercent"]["base"] + stats["physical"]["hitPercent"]["base"];
+	temp["hitPercent"]["posMod"] = temp["hitPercent"]["posMod"] + stats["physical"]["hitPercent"]["posMod"];
+	temp["hitPercent"]["negMod"] = temp["hitPercent"]["negMod"] + stats["physical"]["hitPercent"]["negMod"];
+	
 	
 	--Add general spell damage to specific school spell damages
 	local schools = { "holy", "fire", "nature", "frost", "shadow", "arcane" };
@@ -1214,13 +1217,13 @@ function ScrubBuster:GetStats(target, spec)
 	
 	local tempMhMax = stats["melee"]["mainHandDmgMax"];
 	local tempMhMin = stats["melee"]["mainHandDmgMin"];
-	local tempMhDM = stats["melee"]["mainHandDamageMultiplier"]["base"];
+	local tempMhDM = stats["melee"]["mainHandDamageMultiplier"]["mult"];
 	local tempOhMax = stats["melee"]["offHandDmgMax"];
 	local tempOhMin = stats["melee"]["offHandDmgMin"];
-	local tempOhDM = stats["melee"]["offHandDamageMultiplier"]["base"];
+	local tempOhDM = stats["melee"]["offHandDamageMultiplier"]["mult"];
 	local tempRangedMax = stats["ranged"]["dmgMax"];
 	local tempRangedMin = stats["ranged"]["dmgMin"];
-	local tempRangedDM = stats["ranged"]["damageMultiplier"]["base"];
+	local tempRangedDM = stats["ranged"]["damageMultiplier"]["mult"];
 	tempMhMax["base"] = tempMhMax["base"] * tempMhDM;
 	tempMhMin["base"] = tempMhMin["base"] * tempMhDM;
 	tempOhMax["base"] = tempOhMax["base"] * tempOhDM;
@@ -1242,7 +1245,7 @@ function ScrubBuster:GetStats(target, spec)
 	stats["ranged"]["dps"]["base"] = tempRangedAvg / stats["ranged"]["speed"]["base"];
 
 	
-	return level, stats, weaponStats;
+	return level, stats, weaponStats, itemStats;
 end
 
 

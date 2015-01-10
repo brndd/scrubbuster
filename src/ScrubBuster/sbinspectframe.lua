@@ -53,6 +53,11 @@ SBInspectFrame_RightStatDropDownSelection = nil;
 function SBInspectFrame_OnEvent(self, event)
 	if event == "UNIT_INVENTORY_CHANGED" then
 		if arg1 == InspectFrame.unit then
+			SBAmmoSlot_SelectedAmmo = nil;
+			SBAmmoSlot_AmmoDone = false;
+			SBAmmoSlot_SetAmmo(nil);
+			SBAmmoSlot_SelectedQuiver = nil;
+			SBAmmoSlot_QuiverDone = false;
 			SBInspectFrame_UnitUpdated();
 		end
 		return;
@@ -67,6 +72,7 @@ function SBInspectFrame_Show(unit)
 	SBSpecialDropDown1_Selection = nil;
 	SBInspectFrame_Specials = {}; --reset the specials
 	SBAmmoSlot_SelectedAmmo = nil;
+	SBAmmoSlot_SetAmmo(nil);
 	SBAmmoSlot_AmmoDone = false;
 	SBAmmoSlot_SelectedQuiver = nil;
 	SBAmmoSlot_QuiverDone = false;
@@ -82,6 +88,7 @@ function SBInspectFrame_UnitChanged()
 	SBSpecialDropDown1_Selection = nil;
 	SBInspectFrame_Specials = {};
 	SBAmmoSlot_SelectedAmmo = nil;
+	SBAmmoSlot_SetAmmo(nil);
 	SBAmmoSlot_AmmoDone = false;
 	SBAmmoSlot_SelectedQuiver = nil;
 	SBAmmoSlot_QuiverDone = false;
@@ -1065,6 +1072,9 @@ function SBStatFrame_SetArmor(frame)
 	local baseStat = stat["base"];
 	local posMod = stat["posMod"];
 	local negMod = stat["negMod"];
+	local itemStat = ScrubBuster["stats"][name]["itemStats"]["defense"]["armor"]["posMod"];
+	baseStat = baseStat + itemStat;
+	posMod = posMod - itemStat;
 	local totalStat = baseStat + posMod + negMod;
 	getglobal(frame:GetName().."Label"):SetText(ARMOR_COLON);
 	local text = getglobal(frame:GetName().."StatText");
@@ -1155,7 +1165,7 @@ function SBStatFrame_SetParry(frame)
 	local temp = ScrubBuster["stats"][name]["stats"]["defense"];
 	local temp2 = temp["parryPercent"];
 	local chance = temp2["base"] + temp2["posMod"] + temp2["negMod"];
-	SBStatFrame_SetLabelAndText(frame, STAT_BLOCK, chance, 1);
+	SBStatFrame_SetLabelAndText(frame, STAT_PARRY, chance, 1);
 	frame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..getglobal("PARRY_CHANCE").." "..string.format("%.02f", chance).."%"..FONT_COLOR_CODE_CLOSE;
 	
 	local temp2 = temp["parryRating"];

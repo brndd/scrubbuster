@@ -4779,10 +4779,10 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 			["prio"] = 2,
 			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
 				local aura = { ["melee"] = {
-					["mainHandDamageMultiplier"] = { ["base"] = 0 },
+					["mainHandDamageMultiplier"] = { ["mult"] = 1 },
 				} };
 				if weaponStats.mainHand.weaponType[1] == "TWOHAND" then
-					local aura = { ["melee"] = { ["mainHandDamageMultiplier"] = { ["base"] = 0.01 * rank } } };
+					aura["melee"]["mainHandDamageMultiplier"]["mult"] = 1 + 0.01 * rank;
 				end
 				return aura;
 			end
@@ -4878,7 +4878,7 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 			["prio"] = 2,
 			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
 				local bonusarmor = itemStats["defense"]["armor"]["posMod"] or 0;
-				local aura = { ["defense"] = { ["armor"] = { ["posMod"] = bonusarmor * 0.02 * rank } } };
+				local aura = { ["defense"] = { ["armor"] = { ["base"] = bonusarmor * 0.02 * rank } } };
 				return aura;
 			end
 		},
@@ -4903,17 +4903,17 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 			["prio"] = 2,
 			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
 				local aura = { ["melee"] = {
-					["mainHandDamageMultiplier"] = { ["base"] = 1 },
-					["offHandDamageMultiplier"] = { ["base"] = 1 }
+					["mainHandDamageMultiplier"] = { ["mult"] = 1 },
+					["offHandDamageMultiplier"] = { ["mult"] = 1 }
 				} };
 				
 				local mh = weaponStats.mainHand.weaponType;
 				local oh = weaponStats.offHand.weaponType;
 				if mh[1] == "ONEHAND" or mh[1] == "MAINHAND" then
-					aura["melee"]["mainHandDamageMultiplier"]["base"] = 0.02 * rank;
+					aura["melee"]["mainHandDamageMultiplier"]["mult"] = 1 + 0.02 * rank;
 				end
 				if oh[1] == "ONEHAND" or (oh[1] == "OFFHAND" and not (oh[2] == "SHIELD" or oh[2] == "OFFHANDITEM")) then
-					aura["melee"]["offHandDamageMultiplier"]["base"] = 0.02 * rank;
+					aura["melee"]["offHandDamageMultiplier"]["mult"] = 1 + 0.02 * rank;
 				end
 				return aura;				
 			end
@@ -4987,7 +4987,7 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 			["prio"] = 2,
 			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
 				local aura = { ["defense"] = {
-					["armor"] = { ["posMod"] = itemStats["defense"]["armor"]["posMod"] * 0.02 * rank }
+					["armor"] = { ["base"] = itemStats["defense"]["armor"]["posMod"] * 0.02 * rank }
 				} };
 				return aura;
 			end
@@ -5028,19 +5028,19 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
 				local aura = {
 					["melee"] = {
-						["mainHandDamageMultiplier"] = { ["base"] = 1 },
-						["offHandDamageMultiplier"] = { ["base"] = 1 }
+						["mainHandDamageMultiplier"] = { ["mult"] = 1 },
+						["offHandDamageMultiplier"] = { ["mult"] = 1 }
 					},
 					["ranged"] = {
-						["damageMultiplier"] = { ["base"] = 1 }
+						["damageMultiplier"] = { ["mult"] = 1 }
 					}
 				};
 				local mh = weaponStats.mainHand.weaponType;
 				if mh[1] == "ONEHAND" or mh[1] == "MAINHAND" then
-					local temp = 0.01 * rank;
-					aura["melee"]["mainHandDamageMultiplier"]["base"] = temp;
-					aura["melee"]["offHandDamageMultiplier"]["base"] = temp;
-					aura["ranged"]["damageMultiplier"]["base"] = temp;
+					local temp = 1 + 0.01 * rank;
+					aura["melee"]["mainHandDamageMultiplier"]["mult"] = temp;
+					aura["melee"]["offHandDamageMultiplier"]["mult"] = temp;
+					aura["ranged"]["damageMultiplier"]["mult"] = temp;
 				end
 				return aura;
 			end
@@ -5088,10 +5088,10 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 			["prio"] = 2,
 			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
 				local aura = { ["melee"] = {
-					["mainHandDamageMultiplier"] = { ["base"] = 1 }
+					["mainHandDamageMultiplier"] = { ["mult"] = 1 }
 				} };
 				if weaponStats.mainHand.weaponType[1] == "TWOHAND" then
-					aura["melee"]["mainHandDamageMultiplier"]["base"] = 0.02 * rank;
+					aura["melee"]["mainHandDamageMultiplier"]["mult"] = 1 + 0.02 * rank;
 				end
 				return aura;
 			end
@@ -5113,7 +5113,7 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 			["prio"] = 2,
 			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
 				local aura = { ["defense"] = { 
-					["armor"] = { ["posMod"] = itemStats["defense"]["armor"]["posMod"] * 0.04 * rank }
+					["armor"] = { ["base"] = itemStats["defense"]["armor"]["posMod"] * 0.04 * rank }
 				} };
 				return aura;
 			end
@@ -5164,10 +5164,10 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 			["prio"] = 2,
 			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
 				local aura = { ["ranged"] = {
-					["damageMultiplier"] = { ["base"] = 1 }
+					["damageMultiplier"] = { ["mult"] = 1 }
 				} };
 				if weaponStats.ranged.isWeapon then
-					aura["ranged"]["damageMultiplier"]["base"] = 0.01 * rank;
+					aura["ranged"]["damageMultiplier"]["mult"] = 1 + 0.01 * rank;
 				end
 				return aura;
 			end
@@ -5412,10 +5412,10 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 			["prio"] = 2,
 			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
 				local aura = { ["ranged"] = {
-					["damageMultiplier"] = { ["base"] = 1 }
+					["damageMultiplier"] = { ["mult"] = 1 }
 				} };
 				if weaponStats.ranged.weaponType[2] == "WAND" then
-					aura["ranged"]["damageMultiplier"]["base"] = 0.05 * rank;
+					aura["ranged"]["damageMultiplier"]["mult"] = 1 + 0.05 * rank;
 				end
 				return aura;
 			end
@@ -5565,7 +5565,7 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 			["prio"] = 2,
 			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
 				local aura = { ["defense"] = {
-					["armor"] = { ["posMod"] = itemStats["defense"]["armor"]["posMod"] * 0.02 * rank }
+					["armor"] = { ["base"] = itemStats["defense"]["armor"]["posMod"] * 0.02 * rank }
 				} };
 				return aura;
 			end
@@ -5598,14 +5598,14 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 			["prio"] = 2,
 			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
 				local aura = { ["melee"] = {
-					["mainHandDamageMultiplier"] = { ["base"] = 1 },
-					["offHandDamageMultiplier"] = { ["base"] = 1 }
+					["mainHandDamageMultiplier"] = { ["mult"] = 1 },
+					["offHandDamageMultiplier"] = { ["mult"] = 1 }
 				} };
 				if weaponStats.mainHand.isWeapon then
-					aura["melee"]["mainHandDamageMultiplier"]["base"] = 0.02 * rank;
+					aura["melee"]["mainHandDamageMultiplier"]["mult"] = 1 + 0.02 * rank;
 				end
 				if weaponStats.offHand.isWeapon then
-					aura["melee"]["offHandDamageMultiplier"]["base"] = 0.02 * rank;
+					aura["melee"]["offHandDamageMultiplier"]["mult"] = 1 + 0.02 * rank;
 				end
 				return aura;
 			end
@@ -5677,10 +5677,10 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 			["prio"] = 2,
 			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
 				local aura = { ["ranged"] = {
-					["damageMultiplier"] = { ["base"] = 0 }
+					["damageMultiplier"] = { ["mult"] = 0 }
 				} };
 				if weaponStats.ranged.weaponType[2] == "WAND" then
-					aura["ranged"]["damageMultiplier"]["base"] = 0.125 * rank;
+					aura["ranged"]["damageMultiplier"]["mult"] = 1 + 0.125 * rank;
 				end
 				return aura;
 			end
@@ -5883,7 +5883,7 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 			["prio"] = 2,
 			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
 				local aura = { ["defense"] = {
-					["armor"] = { ["posMod"] = itemStats["defense"]["armor"]["posMod"] * (0.01 + 0.03 * rank) }
+					["armor"] = { ["base"] = itemStats["defense"]["armor"]["posMod"] * (0.01 + 0.03 * rank) }
 				} };
 				return aura;
 			end
@@ -5999,8 +5999,8 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 			["prio"] = 2,
 			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
 				local aura = { ["melee"] = {
-					["mainHandDamageMultiplier"] = { ["base"] = 0.02 * rank },
-					["offHandDamageMultiplier"] = { ["base"] = 0.02 * rank }
+					["mainHandDamageMultiplier"] = { ["mult"] = 1 + 0.02 * rank },
+					["offHandDamageMultiplier"] = { ["mult"] = 1 + 0.02 * rank }
 				} };
 				return aura;
 			end
