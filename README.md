@@ -1,6 +1,6 @@
 # ScrubBuster
 ScrubBuster is an addon for World of Warcraft: The Burning Crusade version 2.4.3.
-It displays the total stats of the currently inspected player in the inspect screen.
+It displays the total stats of the currently inspected player in the inspect screen ([screenshot](http://i.imgur.com/JUCNKSr.png)).
 These stats are not normally easily available, so the addon builds them up from the character's
 known base stats according to the game's stat logic, and combines them with bonuses from items
 and talents.
