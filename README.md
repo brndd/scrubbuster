@@ -14,7 +14,7 @@ scanning the target's equipment tooltips for bonuses. A modified version of Bonu
 in the download, and must be installed for the addon to work properly.
 
 # Installation
-Download ScrubBuster, and place the archive's contents in the Interface\AddOns\ folder, so that two new
+[Download](https://github.com/brndd/scrubbuster/blob/master/releases/ScrubBuster_v0.1.7z) ScrubBuster, and place the archive's contents in the Interface\AddOns\ folder, so that two new
 folders appear in the AddOns directory: BonusScanner and ScrubBuster.
 
 Launch WoW, and in the character selection screen click on AddOns in the bottom left corner of the screen. Tick both BonusScanner and ScrubBuster.
