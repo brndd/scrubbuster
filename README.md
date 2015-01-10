@@ -28,6 +28,7 @@ Charater Sheet are displayed.
 There are a couple of differences to the character sheet, stemming from limitations to what the addon can "see" about the inspect:
 - For Warriors and Druids, there is a stance dropdown selection at the top of the inspect window.
 - For Warriors, Rogues and Hunters there is a ammo/quiver selection which you can access by clicking on the ammo slot. The addon automatically preselects appropriate ammo and quiver (quiver for Hunters only) without you having to do anything, though.
+- The tooltip for hit rating (melee, ranged, and spell) will also display the target's total hit rating as adjusted by talents etc. to make it easy to see if a person is hitcapped.
 
 # Limitations and known issues
 - Buffs/auras will probably never be implemented. As far as I'm aware, it is virtually impossible for an addon to accurately detect buff effects.
