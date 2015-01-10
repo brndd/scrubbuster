@@ -510,7 +510,7 @@ IN OTHER WORDS:
 	return stats;
 end
 
-function ScrubBuster:AddAuras(stats, auras, weaponStats, itemStats, level, special)
+function ScrubBuster:AddAuras(stats, auras, weaponStats, itemStats, level, class, special)
 --adds all auras in a table to the main stats
 
 	for _,aura in pairs(auras) do
@@ -520,7 +520,7 @@ function ScrubBuster:AddAuras(stats, auras, weaponStats, itemStats, level, speci
 			stats = ScrubBuster:AddStat(stats, effect);
 		
 		elseif aura["isRacial"] then
-			local effect = aura["func"](weaponStats);
+			local effect = aura["func"](weaponStats, class);
 			stats = ScrubBuster:AddStat(stats, effect);
 			
 		end
@@ -963,13 +963,13 @@ function ScrubBuster:GetStats(target, spec)
 	--------------------------------------------------
 	
 	--racial bonuses, most of 'em at least (some exceptions like tauren health are added later on)
-	auras = ScrubBuster:GetRacials(race, stats, weaponStats, auras);
+	auras = ScrubBuster:GetRacials(race, class, stats, weaponStats, auras);
 
 	--Get talents
 	auras = ScrubBuster:GetTalents(inspect, class, auras);
 		
 	--Before going on to secondary stats, add "priority 1" auras, ie. auras that affect primary stats
-	stats = ScrubBuster:AddAuras(stats, auras[1], weaponStats, itemStats, level, special);
+	stats = ScrubBuster:AddAuras(stats, auras[1], weaponStats, itemStats, level, class, special);
 	
 	--Apply multipliers for primary stats
 	for k,v in pairs(stats["primary"]) do
@@ -1030,7 +1030,7 @@ function ScrubBuster:GetStats(target, spec)
 	
 	
 	---Now that secondary stats are figured out, add secondary stat auras
-	stats = ScrubBuster:AddAuras(stats, auras[2], weaponStats, itemStats, level, special);
+	stats = ScrubBuster:AddAuras(stats, auras[2], weaponStats, itemStats, level, class, special);
 	
 
 		
@@ -1166,7 +1166,7 @@ function ScrubBuster:GetStats(target, spec)
 	end
 	
 	--priority 3 auras, aka the special needs auras
-	stats = ScrubBuster:AddAuras(stats, auras[3], weaponStats, itemStats, level, special);
+	stats = ScrubBuster:AddAuras(stats, auras[3], weaponStats, itemStats, level, class, special);
 	
 	--Apply non-primary stat multipliers
 	for k,v in pairs(stats) do
@@ -1528,13 +1528,13 @@ function ScrubBuster:ScanAmmoTooltip(itemlink)
 	return dpstable, ammotype;
 end
 
-function ScrubBuster:GetRacials(race, stats, weaponStats, auras)
+function ScrubBuster:GetRacials(race, class, stats, weaponStats, auras)
 --Adds the player's racials to their auras. Takes in the respective stats from GetStats.
 --returns the auras table with racials added to it.
 	if race == "Human" then
 		local effect1 = {
 			["isRacial"] = true;
-			["func"] = function(weaponStats)
+			["func"] = function(weaponStats, class)
 				local aura = {					
 					["melee"] = {
 						["mainHandExpertise"] = { ["base"] = 0 },
@@ -1552,7 +1552,7 @@ function ScrubBuster:GetRacials(race, stats, weaponStats, auras)
 		};
 		local effect2 = {
 			["isRacial"] = true;
-			["func"] = function(weaponStats)
+			["func"] = function(weaponStats, class)
 				local aura = { ["primary"] = { ["spi"] = { ["mult"] = 1.1 } } };
 				return aura;
 			end
@@ -1564,7 +1564,7 @@ function ScrubBuster:GetRacials(race, stats, weaponStats, auras)
 	elseif race == "Orc" then
 		local effect = {
 			["isRacial"] = true;
-			["func"] = function(weaponStats)
+			["func"] = function(weaponStats, class)
 				local aura = {					
 					["melee"] = {
 						["mainHandExpertise"] = { ["base"] = 0 },
@@ -1586,7 +1586,7 @@ function ScrubBuster:GetRacials(race, stats, weaponStats, auras)
 	elseif race == "Dwarf" then
 		local effect1 = {
 			["isRacial"] = true;
-			["func"] = function(weaponStats)
+			["func"] = function(weaponStats, class)
 				local aura = {
 					["ranged"] = { ["critPercent"] = { ["base"] = 0 } }
 				};
@@ -1598,7 +1598,7 @@ function ScrubBuster:GetRacials(race, stats, weaponStats, auras)
 		};
 		local effect2 = {
 			["isRacial"] = true;
-			["func"] = function(weaponStats)
+			["func"] = function(weaponStats, class)
 				local aura = { ["resist"] = { ["frost"] = { ["posMod"] = 10 } } };
 				return aura;
 			end
@@ -1609,14 +1609,14 @@ function ScrubBuster:GetRacials(race, stats, weaponStats, auras)
 	elseif race == "NightElf" then
 		local effect1 = {
 			["isRacial"] = true;
-			["func"] = function(weaponStats)
+			["func"] = function(weaponStats, class)
 				local aura = { ["defense"] = { ["dodgePercent"] = { ["base"] = 1 } } };
 				return aura;
 			end
 		};
 		local effect2 = {
 			["isRacial"] = true;
-			["func"] = function(weaponStats)
+			["func"] = function(weaponStats, class)
 				local aura = { ["resist"] = { ["nature"] = { ["posMod"] = 10 } } };
 				return aura;
 			end
@@ -1628,7 +1628,7 @@ function ScrubBuster:GetRacials(race, stats, weaponStats, auras)
 	elseif race == "Scourge" then
 		local effect = {
 			["isRacial"] = true;
-			["func"] = function(weaponStats)
+			["func"] = function(weaponStats, class)
 				local aura = { ["resist"] = { ["shadow"] = { ["posMod"] = 10 } } };
 				return aura;
 			end
@@ -1638,14 +1638,14 @@ function ScrubBuster:GetRacials(race, stats, weaponStats, auras)
 	elseif race == "Tauren" then
 		local effect1 = {
 			["isRacial"] = true;
-			["func"] = function(weaponStats)
+			["func"] = function(weaponStats, class)
 				local aura = { ["resist"] = { ["nature"] = { ["posMod"] = 10 } } };
 				return aura;
 			end
 		};
 		local effect2 = {
 			["isRacial"] = true;
-			["func"] = function(weaponStats)
+			["func"] = function(weaponStats, class)
 				local aura = { ["resource"] = { ["health"] = { ["mult"] = 1.05 } } };
 				return aura;
 			end
@@ -1656,14 +1656,14 @@ function ScrubBuster:GetRacials(race, stats, weaponStats, auras)
 	elseif race == "Gnome" then
 		local effect1 = {
 			["isRacial"] = true;
-			["func"] = function(weaponStats)
+			["func"] = function(weaponStats, class)
 				local aura = { ["primary"] = { ["int"] = { ["mult"] = 1.05 } } };
 				return aura;
 			end
 		};
 		local effect2 = {
 			["isRacial"] = true;
-			["func"] = function(weaponStats)
+			["func"] = function(weaponStats, class)
 				local aura = { ["resist"] = { ["arcane"] = { ["posMod"] = 10 } } };
 				return aura;
 			end
@@ -1675,7 +1675,7 @@ function ScrubBuster:GetRacials(race, stats, weaponStats, auras)
 		--turns out the health regen racial is actually *rate*, not magnitude.
 		local effect = {
 			["isRacial"] = true;
-			["func"] = function(weaponStats)
+			["func"] = function(weaponStats, class)
 				local aura = { ["ranged"] = { ["critPercent"] = { ["base"] = 0 } } };
 				if weaponStats.ranged.hasItem and (weaponStats.ranged.weaponType[2] == 'BOW' or weaponStats.ranged.weaponType[2] == 'THROWN') then
 					aura["ranged"]["critPercent"]["base"] = 1;
@@ -1689,7 +1689,7 @@ function ScrubBuster:GetRacials(race, stats, weaponStats, auras)
 	elseif race == "BloodElf" then
 		local effect = {
 			["isRacial"] = true;
-			["func"] = function(weaponStats)
+			["func"] = function(weaponStats, class)
 					local aura = {
 						["resist"] = {
 							["arcane"] = { ["posMod"] = 5 },
@@ -1706,14 +1706,30 @@ function ScrubBuster:GetRacials(race, stats, weaponStats, auras)
 
 		
 	elseif race == "Draenei" then
-		local effect = {
+		local effect1 = {
 			["isRacial"] = true;
-			["func"] = function(weaponStats)
+			["func"] = function(weaponStats, class)
 				local aura = { ["resist"] = { ["shadow"] = { ["posMod"] = 10 } } };
 				return aura;
 			end
 		};
-		table.insert(auras[1], effect);
+		local effect2 = {
+			["isRacial"] = true;
+			["func"] = function(weaponStats, class)
+				local aura = {
+					["physical"] = { ["hitPercent"] = { ["base"] = 0 } },
+					["spell"] = { ["hitPercent"] = { ["base"] = 0 } },
+				};
+				if class == "WARRIOR" or class == "PALADIN" or class == "HUNTER" then
+					aura["physical"]["hitPercent"]["base"] = 1;
+				elseif class == "PRIEST" or class == "MAGE" or class == "SHAMAN" then
+					aura["spell"]["hitPercent"]["base"] = 1;
+				end
+				return aura;
+			end
+		};
+		table.insert(auras[1], effect1);
+		table.insert(auras[2], effect2);
 	end
 	
 	return auras;
