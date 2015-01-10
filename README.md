@@ -34,3 +34,4 @@ There are a couple of differences to the character sheet, stemming from limitati
 - Buffs/auras will probably never be implemented. As far as I'm aware, it is virtually impossible for an addon to accurately detect buff effects.
 - Talents and druid forms that increase armour contribution from items incorrectly apply to armour enchantments too. As far as I'm aware this is impossible to properly fix.
 - If you're playing on private servers, there may be some inconsistencies due to the server having incorrect configuration. This is probably an issue with the server, not the addon, but if you come across stuff like this let me know anyway.
+- **Importantly**, because the addon works partially by scanning tooltips which depend on localisation, non-English localisations are not properly supported and probably never will be. Use the English client.
