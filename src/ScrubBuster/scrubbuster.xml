@@ -1,0 +1,793 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+<Script file="scrubbuster.lua"/>
+<Script file="sbdata.lua"/>
+<Script file="sbinspectframe.lua"/>
+
+<Frame name="ScrubBusterFrame" parent="UIParent" hidden="true">
+	<Scripts>
+		<OnLoad>
+			ScrubBuster_OnLoad();
+		</OnLoad>
+		<OnEvent>
+			ScrubBuster_OnEvent(event);
+		</OnEvent>
+	</Scripts>
+</Frame>
+
+<GameTooltip name="ScrubBusterTooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="GameTooltipTemplate">
+	<Scripts>
+		<OnLoad>
+			this:SetOwner(ScrubBusterFrame, "ANCHOR_NONE");
+		</OnLoad>
+	</Scripts>
+</GameTooltip>
+
+<Frame name="ScrubBusterSpecialDropDownsFrame" parent="InspectPaperDollFrame">
+	<Size>
+		<AbsDimension x="200" y="30"/>
+	</Size>
+	<Anchors>
+		<Anchor point="TOP">
+			<Offset>
+				<AbsDimension x="0" y="-50"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Frames>
+		<Frame name="ScrubBusterSpecialDropDown1" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="-5"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad>
+					SBSpecialDropDown1_OnLoad();
+				</OnLoad>
+				<OnShow>
+					SBSpecialDropDown1_OnLoad();
+					local _,class = UnitClass(InspectFrame.unit);
+					if class == "WARRIOR" or class == "DRUID" then
+						this:Show();
+					else
+						this:Hide();
+					end
+				</OnShow>
+			</Scripts>
+		</Frame>
+	</Frames>
+</Frame>
+
+<Button name="ScrubBusterAmmoSlot" parent="InspectPaperDollFrame">
+	<Size>
+		<AbsDimension x="27" y="27"/>
+	</Size>
+	<Anchors>
+		<Anchor point="LEFT" relativeTo="InspectRangedSlot" relativePoint="RIGHT">
+			<Offset>
+				<AbsDimension x="15" y="0"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture file="Interface\PaperdollInfoFrame\UI-Character-AmmoSlot">
+				<Size>
+					<AbsDimension x="41" y="41"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<TexCoords left="0" right="0.640625" top="0" bottom="0.640625"/>
+			</Texture>
+		</Layer>
+		<Layer level="BORDER">
+			<Texture name="$parentIconTexture"/>
+			<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-1" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="$parentStock" inherits="NumberFontNormalYellow" justifyH="LEFT" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+		</Layer>
+		<Layer level="OVERLAY">
+			<Texture file="Interface\PaperdollInfoFrame\UI-Character-AmmoSlot">
+				<Size>
+					<AbsDimension x="23" y="41"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="-22" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<TexCoords left="0.640625" right="1.0" top="0" bottom="0.640625"/>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnLoad>
+			SBAmmoSlot_OnLoad();
+			this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+		</OnLoad>
+		<OnShow>
+			SBAmmoSlot_OnShow();
+		</OnShow>
+		<OnHide>
+			SBAmmoSlot_OnHide();
+		</OnHide>
+		<OnEnter>
+			SBAmmoSlot_OnEnter(self);
+		</OnEnter>
+		<OnLeave>
+			GameTooltip:Hide();
+		</OnLeave>
+		<OnClick>
+			SBAmmoSlot_OnClick(button);
+		</OnClick>
+	</Scripts>
+	<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+		<Size>
+			<AbsDimension x="47" y="47"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="-1"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</NormalTexture>
+	<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+	<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+</Button>
+
+
+<Button name="ScrubBusterAmmoSelectionButton_Template" virtual="true" hidden="false">
+	<Size>
+		<AbsDimension x="150" y="20"/>
+	</Size>
+	<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+	<Layers>
+		<Layer level="ARTWORK">
+			<Texture name="$parent_Icon">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Texture>
+			<FontString name="$parent_Name" inherits="GameFontNormal" justifyH="LEFT">
+				<Size>
+					<AbsDimension x="130" y="12"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_Icon" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+		</Layer>
+		<Layer level="BACKGROUND">
+			<Texture name="$parent_Selection" hidden="true">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+				</Anchors>
+				<Color r="0.35" g="0.75" b="1" a="1"/>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnLoad>
+			this:RegisterForClicks("LeftButtonUp");
+		</OnLoad>
+		<OnEnter>
+			SBAmmoSelectionButton_OnEnter();
+		</OnEnter>
+		<OnLeave>
+			SBAmmoSelectionButton_OnLeave();
+		</OnLeave>
+		<OnClick>
+			SBAmmoSelectionButton_OnClick(button);
+		</OnClick>
+	</Scripts>
+</Button>
+
+<Frame name="ScrubBusterAmmoSelectionFrame" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" parent="ScrubBusterAmmoSlot">
+	<Anchors>
+		<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT"/>
+	</Anchors>
+	<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+		<BackgroundInsets>
+			<AbsInset left="10" right="10" top="10" bottom="10"/>
+		</BackgroundInsets>
+		<TileSize>
+			<AbsValue val="32"/>
+		</TileSize>
+		<EdgeSize>
+			<AbsValue val="32"/>
+		</EdgeSize>
+	</Backdrop>
+	<Frames>
+		<Frame name="$parent_Content">
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="15" y="-15"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT">
+					<Offset>
+						<AbsDimension x="-15" y="15"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Frame>
+	</Frames>
+	<Scripts>
+		<OnLoad>
+			SBAmmoSelectionFrame_OnLoad();
+		</OnLoad>
+		<OnShow>
+			SBAmmoSelectionFrame_OnShow();
+		</OnShow>
+	</Scripts>
+</Frame>
+
+<Button name="ScrubBusterQuiverSelectionButton_Template" virtual="true" hidden="false">
+	<Size>
+		<AbsDimension x="150" y="20"/>
+	</Size>
+	<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+	<Layers>
+		<Layer level="ARTWORK">
+			<Texture name="$parent_Icon">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Texture>
+			<FontString name="$parent_Name" inherits="GameFontNormal" justifyH="LEFT">
+				<Size>
+					<AbsDimension x="130" y="12"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_Icon" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+		</Layer>
+		<Layer level="BACKGROUND">
+			<Texture name="$parent_Selection" hidden="true">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+				</Anchors>
+				<Color r="0.35" g="0.75" b="1" a="1"/>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnLoad>
+			this:RegisterForClicks("LeftButtonUp");
+		</OnLoad>
+		<OnEnter>
+			SBQuiverSelectionButton_OnEnter();
+		</OnEnter>
+		<OnLeave>
+			SBQuiverSelectionButton_OnLeave();
+		</OnLeave>
+		<OnClick>
+			SBQuiverSelectionButton_OnClick(button);
+		</OnClick>
+	</Scripts>
+</Button>
+
+<Frame name="ScrubBusterQuiverSelectionFrame" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" parent="ScrubBusterAmmoSlot">
+	<Anchors>
+		<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT"/>
+	</Anchors>
+	<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+		<BackgroundInsets>
+			<AbsInset left="10" right="10" top="10" bottom="10"/>
+		</BackgroundInsets>
+		<TileSize>
+			<AbsValue val="32"/>
+		</TileSize>
+		<EdgeSize>
+			<AbsValue val="32"/>
+		</EdgeSize>
+	</Backdrop>
+	<Frames>
+		<Frame name="$parent_Content">
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="15" y="-15"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT">
+					<Offset>
+						<AbsDimension x="-15" y="15"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Frame>
+	</Frames>
+	<Scripts>
+		<OnLoad>
+			SBQuiverSelectionFrame_OnLoad();
+		</OnLoad>
+		<OnShow>
+			SBQuiverSelectionFrame_OnShow();
+		</OnShow>
+	</Scripts>
+</Frame>
+
+<Frame name="ScrubBusterMagicResistanceFrameTemplate" virtual="true">
+	<Size>
+		<AbsDimension x="32" y="29"/>
+	</Size>
+	<Scripts>
+		<OnEnter>
+			if ( this.tooltip ) then
+				GameTooltip:SetOwner(this,"ANCHOR_RIGHT");
+				GameTooltip:SetText(this.tooltip, 1.0,1.0,1.0);
+				GameTooltip:AddLine(this.tooltipSubtext, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+				GameTooltip:Show();
+			end
+		</OnEnter>
+		<OnLeave>
+			GameTooltip:Hide();
+		</OnLeave>
+	</Scripts>
+</Frame>
+
+<Frame name="ScrubBusterResistanceFrame" parent="InspectPaperDollFrame">
+	<Size>
+		<AbsDimension x="32" y="160"/>
+	</Size>
+	<Anchors>
+		<Anchor point="TOPRIGHT" relativeTo="InspectPaperDollFrame" relativePoint="TOPLEFT">
+			<Offset>
+				<AbsDimension x="297" y="-77"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Frames>
+		<Frame name="ScrubBusterMagicResFrame1" inherits="ScrubBusterMagicResistanceFrameTemplate" id="6">
+			<Anchors>
+				<Anchor point="TOP" relativeTo="ScrubBusterResistanceFrame" relativePoint="TOP"/>
+			</Anchors>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
+						<TexCoords left="0" right="1.0" top="0.2265625" bottom="0.33984375"/>
+					</Texture>
+					<FontString name="ScrubBusterMagicResText1" inherits="GameFontHighlightSmall" text="X">
+						<Anchors>
+							<Anchor point="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+		</Frame>
+		
+		<Frame name="ScrubBusterMagicResFrame2" inherits="ScrubBusterMagicResistanceFrameTemplate" id="2">
+			<Anchors>
+				<Anchor point="TOP" relativeTo="ScrubBusterMagicResFrame1" relativePoint="BOTTOM"/>
+			</Anchors>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
+						<TexCoords left="0" right="1.0" top="0" bottom="0.11328125"/>
+					</Texture>
+					<FontString name="ScrubBusterMagicResText2" inherits="GameFontHighlightSmall" text="X">
+						<Anchors>
+							<Anchor point="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+		</Frame>
+		
+		<Frame name="ScrubBusterMagicResFrame3" inherits="ScrubBusterMagicResistanceFrameTemplate" id="3">
+			<Anchors>
+				<Anchor point="TOP" relativeTo="ScrubBusterMagicResFrame2" relativePoint="BOTTOM"/>
+			</Anchors>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
+						<TexCoords left="0" right="1.0" top="0.11328125" bottom="0.2265625"/>
+					</Texture>
+					<FontString name="ScrubBusterMagicResText3" inherits="GameFontHighlightSmall" text="X">
+						<Anchors>
+							<Anchor point="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+		</Frame>
+		
+		<Frame name="ScrubBusterMagicResFrame4" inherits="ScrubBusterMagicResistanceFrameTemplate" id="4">
+			<Anchors>
+				<Anchor point="TOP" relativeTo="ScrubBusterMagicResFrame3" relativePoint="BOTTOM"/>
+			</Anchors>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
+						<TexCoords left="0" right="1.0" top="0.33984375" bottom="0.453125"/>
+					</Texture>
+					<FontString name="ScrubBusterMagicResText4" inherits="GameFontHighlightSmall" text="X">
+						<Anchors>
+							<Anchor point="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+		</Frame>
+		
+		<Frame name="ScrubBusterMagicResFrame5" inherits="ScrubBusterMagicResistanceFrameTemplate" id="5">
+			<Anchors>
+				<Anchor point="TOP" relativeTo="ScrubBusterMagicResFrame4" relativePoint="BOTTOM"/>
+			</Anchors>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
+						<TexCoords left="0" right="1.0" top="0.453125" bottom="0.56640625"/>
+					</Texture>
+					<FontString name="ScrubBusterMagicResText5" inherits="GameFontHighlightSmall" text="X">
+						<Anchors>
+							<Anchor point="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+		</Frame>
+		
+	</Frames>
+</Frame>
+
+<Frame name="ScrubBusterStatFrameTemplate" virtual="true">
+	<Size>
+		<AbsDimension x="104" y="13"/>
+	</Size>
+	<Layers>
+		<Layer level="BACKGROUND">
+			<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Frames>
+		<Frame name="$parentStat">
+			<Size>
+				<AbsDimension x="30" y="13"/>
+			</Size>
+			<Anchors>
+				<Anchor point="RIGHT"/>
+			</Anchors>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+						<Anchors>
+							<Anchor point="RIGHT"/>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+		</Frame>
+	</Frames>
+	<Scripts>
+		<OnEnter>
+			SBStatFrameTooltip();
+		</OnEnter>
+		<OnLeave>
+			GameTooltip:Hide();
+		</OnLeave>
+	</Scripts>
+</Frame>
+
+<Frame name="ScrubBusterAttributesFrame" parent="InspectPaperDollFrame">
+	<Size>
+		<AbsDimension x="230" y="78"/>
+	</Size>
+	<Anchors>
+		<Anchor point="TOPLEFT">
+			<Offset>
+				<AbsDimension x="67" y="-291"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture name="ScrubBusterStatLeftTop" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+				<Size>
+					<AbsDimension x="115" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<TexCoords left="0" right="0.8984375" top="0" bottom="0.125"/>
+			</Texture>
+			<Texture name="ScrubBusterStatLeftMiddle" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+				<Size>
+					<AbsDimension x="115" y="53"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ScrubBusterStatLeftTop" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<TexCoords left="0" right="0.8984375" top="0.125" bottom="0.1953125"/>
+			</Texture>
+			<Texture name="ScrubBusterStatLeftBottom" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+				<Size>
+					<AbsDimension x="115" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ScrubBusterStatLeftMiddle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<TexCoords left="0" right="0.8984375" top="0.484375" bottom="0.609375"/>
+			</Texture>
+			<Texture name="ScrubBusterStatRightTop" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+				<Size>
+					<AbsDimension x="115" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ScrubBusterStatLeftTop" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<TexCoords left="0" right="0.8984375" top="0" bottom="0.125"/>
+			</Texture>
+			<Texture name="ScrubBusterStatRightMiddle" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+				<Size>
+					<AbsDimension x="115" y="53"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ScrubBusterStatRightTop" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<TexCoords left="0" right="0.8984375" top="0.125" bottom="0.1953125"/>
+			</Texture>
+			<Texture name="ScrubBusterStatRightBottom" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+				<Size>
+					<AbsDimension x="115" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ScrubBusterStatRightMiddle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<TexCoords left="0" right="0.8984375" top="0.484375" bottom="0.609375"/>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Frames>
+		<Frame name="ScrubBusterStatFrameLeft1" inherits="ScrubBusterStatFrameTemplate" id="1">
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="6" y="-3"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Frame>
+		<Frame name="ScrubBusterStatFrameLeft2" inherits="ScrubBusterStatFrameTemplate" id="2">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="ScrubBusterStatFrameLeft1" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Frame>
+		<Frame name="ScrubBusterStatFrameLeft3" inherits="ScrubBusterStatFrameTemplate" id="3">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="ScrubBusterStatFrameLeft2" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Frame>
+		<Frame name="ScrubBusterStatFrameLeft4" inherits="ScrubBusterStatFrameTemplate" id="4">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="ScrubBusterStatFrameLeft3" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Frame>
+		<Frame name="ScrubBusterStatFrameLeft5" inherits="ScrubBusterStatFrameTemplate" id="5">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="ScrubBusterStatFrameLeft4" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Frame>
+		<Frame name="ScrubBusterStatFrameLeft6" inherits="ScrubBusterStatFrameTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="ScrubBusterStatFrameLeft5" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Frame>
+	   <Frame name="ScrubBusterStatFrameRight1" inherits="ScrubBusterStatFrameTemplate" id="1">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="ScrubBusterStatRightTop">
+					<Offset>
+						<AbsDimension x="6" y="-3"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Frame>
+		<Frame name="ScrubBusterStatFrameRight2" inherits="ScrubBusterStatFrameTemplate" id="2">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="ScrubBusterStatFrameRight1" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Frame>
+		<Frame name="ScrubBusterStatFrameRight3" inherits="ScrubBusterStatFrameTemplate" id="3">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="ScrubBusterStatFrameRight2" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Frame>
+		<Frame name="ScrubBusterStatFrameRight4" inherits="ScrubBusterStatFrameTemplate" id="4">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="ScrubBusterStatFrameRight3" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Frame>
+		<Frame name="ScrubBusterStatFrameRight5" inherits="ScrubBusterStatFrameTemplate" id="5">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="ScrubBusterStatFrameRight4" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Frame>
+		<Frame name="ScrubBusterStatFrameRight6" inherits="ScrubBusterStatFrameTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="ScrubBusterStatFrameRight5" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Frame>
+		<Frame name="ScrubBusterStatFrameLeftDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<Anchors>
+				<Anchor point="BOTTOMLEFT" relativeTo="ScrubBusterStatLeftTop" relativePoint="TOPLEFT">
+					<Offset>
+						<AbsDimension x="-17" y="-8"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad>
+					SBStatFrameLeftDropDown_OnLoad();
+				</OnLoad>
+				<OnShow>
+					SBStatFrameLeftDropDown_OnLoad();
+				</OnShow>
+			</Scripts>
+		</Frame>
+		<Frame name="ScrubBusterStatFrameRightDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<Anchors>
+				<Anchor point="BOTTOMLEFT" relativeTo="ScrubBusterStatRightTop" relativePoint="TOPLEFT">
+					<Offset>
+						<AbsDimension x="-17" y="-8"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad>
+					SBStatFrameRightDropDown_OnLoad();
+				</OnLoad>
+				<OnShow>
+					SBStatFrameRightDropDown_OnLoad();
+				</OnShow>
+			</Scripts>
+		</Frame>
+	</Frames>
+</Frame>
+</Ui>
