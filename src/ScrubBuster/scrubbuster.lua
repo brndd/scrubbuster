@@ -92,9 +92,9 @@ local sbWeaponClasses = { --table of weapon classes as they appear in the toolti
 	["Bow"] = "BOW",
 	["Gun"] = "GUN",
 	["Crossbow"] = "CROSSBOW",
-	--["Idol"] = "IDOL",
-	--["Libram"] = "LIBRAM",
-	--["Totem"] = "TOTEM",
+	["Idol"] = "IDOL",
+	["Libram"] = "LIBRAM",
+	["Totem"] = "TOTEM",
 	--there's also "Held in Off-hand" (called "OFFHANDITEM") items but they're handled outside of this table
 	--also items for which we can't figure this out will be called "UNKNOWN"
 };
@@ -422,7 +422,13 @@ IN OTHER WORDS:
 			["blockRating"] = {["base"] = 0, ["posMod"] = 0, ["negMod"] = 0, ["mult"] = 1}, 
 			["blockPercent"] = {["base"] = 0, ["posMod"] = 0, ["negMod"] = 0, ["mult"] = 1}, 
 			["blockValue"] = {["base"] = 0, ["posMod"] = 0, ["negMod"] = 0, ["mult"] = 1},
-			["resilience"] = {["base"] = 0, ["posMod"] = 0, ["negMod"] = 0, ["mult"] = 1}
+			["resilience"] = {["base"] = 0, ["posMod"] = 0, ["negMod"] = 0, ["mult"] = 1},
+			--critReduction is the reduction to the chance of being critically struck by *melee attacks*
+			--We don't track this for spells or ranged attacks because.
+			--things like some talents, Defense skill, and Resilience increase this.
+			--Note that Defense skill is technically supposed to increase it in relation
+			--to the attacker's Weapon Skill, but for our purposes this doesn't matter
+			["critReduction"] = {["base"] = 0, ["posMod"] = 0, ["negMod"] = 0, ["mult"] = 1}
 			},
 		
 		["physical"] = {
@@ -1102,13 +1108,20 @@ function ScrubBuster:GetStats(target, spec)
 	stats["spell"]["hitPercent"]["base"] = stats["spell"]["hitPercent"]["base"] + tempSpellHit;
 
 	
-	--Add effect of defense skill on dodge, block and parry
+	--Add effect of defense skill on dodge, block and parry, and chance to be critically hit
+	--this assumes an equal level opponent
 	local temp = stats["defense"]
 	local tempDefense = temp["defense"]["base"] + temp["defense"]["posMod"] + temp["defense"]["negMod"];
-	local tempDefEffect = (tempDefense - 70 * 5) * 0.04;
+	local tempDefEffect = (tempDefense - level * 5) * 0.04;
 	temp["dodgePercent"]["base"] = temp["dodgePercent"]["base"] + tempDefEffect;
 	temp["parryPercent"]["base"] = temp["parryPercent"]["base"] + tempDefEffect;
 	temp["blockPercent"]["base"] = temp["blockPercent"]["base"] + tempDefEffect;
+	temp["critReduction"]["base"] = temp["critReduction"]["base"] + tempDefEffect;
+	
+	--Add effect of resilience on critReduction
+	local tempResilience = temp["resilience"]["base"] + temp["resilience"]["posMod"] + temp["resilience"]["negMod"];
+	local tempResEffect = StatLogic:GetEffectFromRating(tempResilience, CR_CRIT_TAKEN_MELEE, level);
+	temp["critReduction"]["base"] = temp["critReduction"]["base"] + tempResEffect;
 	
 	
 	--Add common expertise to mainhand and offhand expertises
@@ -1434,9 +1447,15 @@ function ScrubBuster:ScanWeapTooltip(itemlink)
 			if not tempweaponclass then
 				if sbWeaponClasses[rightLine] then
 					tempweaponclass = sbWeaponClasses[rightLine]
-					--if tempweaponclass ~= "IDOL" and tempweaponclass ~= "LIBRAM" and tempweaponclass ~= "TOTEM" then
+					local notweapons = {
+						["SHIELD"] = true,
+						["IDOL"] = true,
+						["LIBRAM"] = true,
+						["TOTEM"] = true,
+					};
+					if not notweapons[tempweaponclass] then
 						isweapon = true;
-					--end
+					end
 				end
 			end
 			

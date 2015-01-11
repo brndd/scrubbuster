@@ -5371,6 +5371,16 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 			end
 		},
 		
+		["Sleight of Hand"] = {
+			["prio"] = 2,
+			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
+				local aura = { ["defense"] = {
+					["critReduction"] = { ["base"] = rank }
+				} };
+				return aura;
+			end
+		},
+		
 		["Serrated Blades"] = {
 			["prio"] = 2,
 			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
@@ -5508,6 +5518,16 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 					["fireHitPercent"] = { ["base"] = 2 * rank },
 					["frostHitPercent"] = { ["base"] = 2 * rank },
 					["natureHitPercent"] = { ["base"] = 2 * rank }
+				} };
+				return aura;
+			end
+		},
+		
+		["Elemental Shields"] = {
+			["prio"] = 2,
+			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
+				local aura = { ["defense"] = {
+					["critReduction"] = { ["base"] = 2 * rank }
 				} };
 				return aura;
 			end
@@ -5800,6 +5820,17 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 			end
 		},
 		
+		["Demonic Resilience"] = {
+			["prio"] = 2,
+			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
+				local aura = { ["defense"] = {
+					["critReduction"] = { ["base"] = rank }
+				} };
+				return aura;
+			end
+		
+		},
+		
 		["Demonic Tactics"] = {
 			["prio"] = 2,
 			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
@@ -5977,6 +6008,13 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 					["sta"] = { ["mult"] = temp},
 					["int"] = { ["mult"] = temp},
 					["spi"] = { ["mult"] = temp}
+				} };
+				return aura;
+			end,
+			["prio2"] = 2,
+			["func2"] = function(rank, stats, weaponStats, itemStats, level, special)
+				local aura = { ["defense"] = {
+					["critReduction"] = { ["base"] = rank }
 				} };
 				return aura;
 			end

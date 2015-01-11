@@ -128,6 +128,26 @@ function SBInspectFrame_Update()
 	local name = UnitName(unit);
 	local level = UnitLevel(unit);
 	if level == -1 then level = 70 end
+		
+	--Change the preselected tab of the stat dropdown menu according to inspected unit's class
+	if not SBInspectFrame_LeftStatDropDownSelection or not SBInspectFrame_RightStatDropDownSelection then
+		SBInspectFrame_LeftStatDropDownSelection = "PLAYERSTAT_BASE_STATS";
+		SBStatFrameLeftDropDown_Initialize();
+		UIDropDownMenu_SetSelectedValue(ScrubBusterStatFrameLeftDropDown, "PLAYERSTAT_BASE_STATS")
+		if class == "MAGE" or class == "PRIEST" or class == "WARLOCK" or class == "DRUID" then
+			SBInspectFrame_RightStatDropDownSelection = "PLAYERSTAT_SPELL_COMBAT";
+			SBStatFrameRightDropDown_Initialize();
+			UIDropDownMenu_SetSelectedValue(ScrubBusterStatFrameRightDropDown, "PLAYERSTAT_SPELL_COMBAT");
+		elseif class == "HUNTER" then
+			SBInspectFrame_RightStatDropDownSelection = "PLAYERSTAT_RANGED_COMBAT";
+			SBStatFrameRightDropDown_Initialize();
+			UIDropDownMenu_SetSelectedValue(ScrubBusterStatFrameRightDropDown, "PLAYERSTAT_RANGED_COMBAT");
+		else
+			SBInspectFrame_RightStatDropDownSelection = "PLAYERSTAT_MELEE_COMBAT";
+			SBStatFrameRightDropDown_Initialize();
+			UIDropDownMenu_SetSelectedValue(ScrubBusterStatFrameRightDropDown, "PLAYERSTAT_MELEE_COMBAT");
+		end
+	end
 	
 	--Guess ammo according to their ranged weapon and other stuff, then recalc the stats if needed
 	if ScrubBuster["stats"][name]["weaponStats"]["ranged"]["isWeapon"] and not SBAmmoSlot_AmmoDone then
@@ -291,26 +311,11 @@ function SBInspectFrame_Update()
 	end
 	if not SBSpecialDropDown1_Selection then
 		SBSpecialDropDown1_Selection = SBSpecialDropDown1_Selections[1];
-		UIDropDownMenu_SetSelectedValue(ScrubBusterSpecialDropDown1, SBSpecialDropDown1_Selection, SBSpecialDropDown1_Selection);
-		UIDropDownMenu_SetText(SBSpecialDropDown1_Selection, ScrubBusterSpecialDropDown1);
+		SBSpecialDropDown1_Initialize();
+		UIDropDownMenu_SetSelectedValue(ScrubBusterSpecialDropDown1, SBSpecialDropDown1_Selection);
+		--UIDropDownMenu_SetSelectedName(ScrubBusterSpecialDropDown1, SBSpecialDropDown1_Selection);
 	end	
 		
-	
-	--Change the preselected tab of the stat dropdown menu according to inspected unit's class
-	if not SBInspectFrame_LeftStatDropDownSelection or not SBInspectFrame_RightStatDropDownSelection then
-		SBInspectFrame_LeftStatDropDownSelection = "PLAYERSTAT_BASE_STATS";
-		UIDropDownMenu_SetSelectedValue(ScrubBusterStatFrameLeftDropDown, "PLAYERSTAT_BASE_STATS")
-		if class == "MAGE" or class == "PRIEST" or class == "WARLOCK" or class == "DRUID" then
-			SBInspectFrame_RightStatDropDownSelection = "PLAYERSTAT_SPELL_COMBAT";
-			UIDropDownMenu_SetSelectedValue(ScrubBusterStatFrameRightDropDown, "PLAYERSTAT_SPELL_COMBAT");
-		elseif class == "HUNTER" then
-			SBInspectFrame_RightStatDropDownSelection = "PLAYERSTAT_RANGED_COMBAT";
-			UIDropDownMenu_SetSelectedValue(ScrubBusterStatFrameRightDropDown, "PLAYERSTAT_RANGED_COMBAT");
-		else
-			SBInspectFrame_RightStatDropDownSelection = "PLAYERSTAT_MELEE_COMBAT";
-			UIDropDownMenu_SetSelectedValue(ScrubBusterStatFrameRightDropDown, "PLAYERSTAT_MELEE_COMBAT");
-		end
-	end
 	
 	--Do the actual updating
 	SBInspectFrame_SetResistances();
@@ -1113,7 +1118,14 @@ function SBStatFrame_SetDefense(frame)
 	local temp = ScrubBuster["stats"][name]["stats"]["defense"]["defenseRating"];
 	local rating = temp["base"] + temp["posMod"] + temp["negMod"];
 	local ratingEffect = StatLogic:GetEffectFromRating(rating, 2, level);
-	frame.tooltip2 = format(DEFAULT_STATDEFENSE_TOOLTIP, floor(rating), floor(ratingEffect), effect, effect);
+	local text = format(DEFAULT_STATDEFENSE_TOOLTIP, floor(rating), floor(ratingEffect), effect, effect);
+	
+	local temp = ScrubBuster["stats"][name]["stats"]["defense"]["critReduction"];
+	local critReduction = temp["base"] + temp["posMod"] + temp["negMod"];
+	local tempString = "\n\nDefense, resilience, and talents reduce chance to be critically hit by %.2f%% in total.\n(Raid bosses have a 5.6%% critical strike chance, whereas regular mobs of the player's level have 5%%)"
+	text = text..format(tempString, critReduction);
+	
+	frame.tooltip2 = text;
 	frame:Show();
 end
 
