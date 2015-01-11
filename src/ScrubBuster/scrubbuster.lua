@@ -1,6 +1,5 @@
 --[[
 ScrubBuster by burneddi
-Release whatever I'm not gonna do this release numbering shit
 ]]
 
 --Libraries
@@ -428,7 +427,10 @@ IN OTHER WORDS:
 			--things like some talents, Defense skill, and Resilience increase this.
 			--Note that Defense skill is technically supposed to increase it in relation
 			--to the attacker's Weapon Skill, but for our purposes this doesn't matter
-			["critReduction"] = {["base"] = 0, ["posMod"] = 0, ["negMod"] = 0, ["mult"] = 1}
+			["critReduction"] = {["base"] = 0, ["posMod"] = 0, ["negMod"] = 0, ["mult"] = 1},
+			--hitReduction is the same as critReduction, except for chance of being hit in melee
+			--some talents add this, as does the Defense skill
+			["hitReduction"] = {["base"] = 0, ["posMod"] = 0, ["negMod"] = 0, ["mult"] = 1}
 			},
 		
 		["physical"] = {
@@ -1108,7 +1110,7 @@ function ScrubBuster:GetStats(target, spec)
 	stats["spell"]["hitPercent"]["base"] = stats["spell"]["hitPercent"]["base"] + tempSpellHit;
 
 	
-	--Add effect of defense skill on dodge, block and parry, and chance to be critically hit
+	--Add effect of defense skill on dodge, block and parry, and chance to be critically hit or hit
 	--this assumes an equal level opponent
 	local temp = stats["defense"]
 	local tempDefense = temp["defense"]["base"] + temp["defense"]["posMod"] + temp["defense"]["negMod"];
@@ -1117,6 +1119,7 @@ function ScrubBuster:GetStats(target, spec)
 	temp["parryPercent"]["base"] = temp["parryPercent"]["base"] + tempDefEffect;
 	temp["blockPercent"]["base"] = temp["blockPercent"]["base"] + tempDefEffect;
 	temp["critReduction"]["base"] = temp["critReduction"]["base"] + tempDefEffect;
+	temp["hitReduction"]["base"] = temp["hitReduction"]["base"] + tempDefEffect;
 	
 	--Add effect of resilience on critReduction
 	local tempResilience = temp["resilience"]["base"] + temp["resilience"]["posMod"] + temp["resilience"]["negMod"];

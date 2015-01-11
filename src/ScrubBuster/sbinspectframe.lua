@@ -1122,7 +1122,7 @@ function SBStatFrame_SetDefense(frame)
 	
 	local temp = ScrubBuster["stats"][name]["stats"]["defense"]["critReduction"];
 	local critReduction = temp["base"] + temp["posMod"] + temp["negMod"];
-	local tempString = "\n\nDefense, resilience, and talents reduce chance to be critically hit by %.2f%% in total.\n(Raid bosses have a 5.6%% critical strike chance, whereas regular mobs of the player's level have 5%%)"
+	local tempString = "\n\nDefense, resilience, and talents reduce chance to be critically hit by %.2f%% in total.\n(Raid boss melee critical chance is 5.6%%)"
 	text = text..format(tempString, critReduction);
 	
 	frame.tooltip2 = text;
@@ -1144,7 +1144,17 @@ function SBStatFrame_SetDodge(frame)
 	local temp2 = temp["dodgeRating"];
 	local rating = temp2["base"] + temp2["posMod"] + temp2["negMod"];
 	local ratingEffect = StatLogic:GetEffectFromRating(rating, 3, level);
-	frame.tooltip2 = format(CR_DODGE_TOOLTIP, floor(rating), ratingEffect);
+	local text = format(CR_DODGE_TOOLTIP, floor(rating), ratingEffect);
+	
+	local dodge = temp["dodgePercent"]["base"] + temp["dodgePercent"]["posMod"] + temp["dodgePercent"]["negMod"];
+	local parry = temp["parryPercent"]["base"] + temp["parryPercent"]["posMod"] + temp["parryPercent"]["negMod"];
+	local block = temp["blockPercent"]["base"] + temp["blockPercent"]["posMod"] + temp["blockPercent"]["negMod"];
+	local miss = temp["hitReduction"]["base"] + temp["hitReduction"]["posMod"] + temp["hitReduction"]["negMod"];
+	local totalAvoidance = dodge + parry + block + miss + 5; --5 is the monster base miss chance
+	local tempString = "\n\nPassive melee avoidance: %.2f%%\n(Uncrushability against raid bosses requires 102.4%% total avoidance)"
+	text = text..format(tempString, totalAvoidance);
+	
+	frame.tooltip2 = text;
 	frame:Show();
 end
 
@@ -1164,7 +1174,17 @@ function SBStatFrame_SetBlock(frame)
 	local rating = temp2["base"] + temp2["posMod"] + temp2["negMod"];
 	local ratingEffect = StatLogic:GetEffectFromRating(rating, 5, level);
 	local blockValue = temp["blockValue"]["base"] + temp["blockValue"]["posMod"] + temp["blockValue"]["negMod"];
-	frame.tooltip2 = format(CR_BLOCK_TOOLTIP, floor(rating), ratingEffect, floor(blockValue));
+	local text = format(CR_BLOCK_TOOLTIP, floor(rating), ratingEffect, floor(blockValue));
+	
+	local dodge = temp["dodgePercent"]["base"] + temp["dodgePercent"]["posMod"] + temp["dodgePercent"]["negMod"];
+	local parry = temp["parryPercent"]["base"] + temp["parryPercent"]["posMod"] + temp["parryPercent"]["negMod"];
+	local block = temp["blockPercent"]["base"] + temp["blockPercent"]["posMod"] + temp["blockPercent"]["negMod"];
+	local miss = temp["hitReduction"]["base"] + temp["hitReduction"]["posMod"] + temp["hitReduction"]["negMod"];
+	local totalAvoidance = dodge + parry + block + miss + 5; --5 is the monster base miss chance
+	local tempString = "\n\nPassive melee avoidance: %.2f%%\n(Uncrushability against raid bosses requires 102.4%% total avoidance)"
+	text = text..format(tempString, totalAvoidance);
+	
+	frame.tooltip2 = text;
 	frame:Show();
 end
 
@@ -1183,7 +1203,17 @@ function SBStatFrame_SetParry(frame)
 	local temp2 = temp["parryRating"];
 	local rating = temp2["base"] + temp2["posMod"] + temp2["negMod"];
 	local ratingEffect = StatLogic:GetEffectFromRating(rating, 4, level);
-	frame.tooltip2 = format(CR_PARRY_TOOLTIP, floor(rating), ratingEffect);
+	local text = format(CR_PARRY_TOOLTIP, floor(rating), ratingEffect);
+	
+	local dodge = temp["dodgePercent"]["base"] + temp["dodgePercent"]["posMod"] + temp["dodgePercent"]["negMod"];
+	local parry = temp["parryPercent"]["base"] + temp["parryPercent"]["posMod"] + temp["parryPercent"]["negMod"];
+	local block = temp["blockPercent"]["base"] + temp["blockPercent"]["posMod"] + temp["blockPercent"]["negMod"];
+	local miss = temp["hitReduction"]["base"] + temp["hitReduction"]["posMod"] + temp["hitReduction"]["negMod"];
+	local totalAvoidance = dodge + parry + block + miss + 5; --5 is the monster base miss chance
+	local tempString = "\n\nPassive melee avoidance: %.2f%%\n(Uncrushability against raid bosses requires 102.4%% total avoidance)"
+	text = text..format(tempString, totalAvoidance);
+	
+	frame.tooltip2 = text;
 	frame:Show();
 end
 

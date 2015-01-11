@@ -5781,7 +5781,17 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
 				local aura = { ["spell"] = {
 					["frostHitPercent"] = { ["base"] = rank },
-					["fireHitPercent"] = { ["base"] = rank}
+					["fireHitPercent"] = { ["base"] = rank }
+				} };
+				return aura;
+			end
+		},
+		
+		["Arctic Winds"] = {
+			["prio"] = 2,
+			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
+				local aura = { ["defense"] = {
+					["hitReduction"] = { ["base"] = rank }
 				} };
 				return aura;
 			end
