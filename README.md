@@ -14,7 +14,7 @@ scanning the target's equipment tooltips for bonuses. A modified version of Bonu
 in the download, and must be installed for the addon to work properly.
 
 # Installation
-##[**Click to download**](https://github.com/brndd/scrubbuster/raw/master/releases/ScrubBuster_v0.3.7z)
+##[**Click to download**](https://github.com/brndd/scrubbuster/raw/master/releases/ScrubBuster_v0.4.7z)
 Download ScrubBuster, and place the archive's contents in the Interface\AddOns\ folder, so that two new
 folders appear in the AddOns directory: BonusScanner and ScrubBuster.
 
@@ -31,6 +31,8 @@ There are a couple of differences to the character sheet, stemming from limitati
 - For Warriors and Druids, there is a stance dropdown selection at the top of the inspect window.
 - For Warriors, Rogues and Hunters there is a ammo/quiver selection which you can access by clicking on the ammo slot. The addon automatically preselects appropriate ammo and quiver without you having to do anything, though: the quiver selection selects the best (reasonable easily) available quiver for the player's level, and the ammo selection selects the best vendor-bought ammunition available to the player's level. For level 70 players, if their weapon itemlevel is above 125 the addon will default to the best available ammunition (Timeless Arrow/Shell) which require The Scale of the Sands reputation to get, otherwise it will use Cenarion Expedition or Honor Hold/Thrallmar reputation ammunition.
 - The tooltip for hit rating (melee, ranged, and spell) will also display the target's total hit rating as adjusted by talents etc. to make it easy to see if a person is hitcapped. This only includes the Draenei racial for Draenei players; the party member portion is not included (because it's a buff). You will have to factor that in manually if it's applicable.
+- The tooltip for Defense skill will also display the target's chance of being critically hit in melee, ie. uncrittability.
+- The tooltip for Parry, Block and Dodge will also display total passive avoidance. This is useful for figuring out uncrushability, but keep in mind active skills like Shield Block are not shown in the tooltip.
 
 # Limitations and known issues
 - Buffs/auras will probably never be implemented. As far as I'm aware, it is virtually impossible for an addon to accurately detect buff effects.
