@@ -20,6 +20,37 @@ end
 -----------------------------
 --Script handling stuff etc--
 -----------------------------
+
+--we need a timeout for INSPECT_TALENT_READY function in case it never fires for whatever reason
+local waitingForTalents = false;
+local waitedForTalents = 0; --time we've spent waiting for talents
+CreateFrame("Frame", "ScrubBusterTimeout");
+
+function ScrubBusterTimeout_OnUpdate(self, elapsed)
+	if not waitingForTalents then
+		waitedForTalents = 0;
+		self:SetScript("OnUpdate", nil);
+		return;
+	end
+	waitedForTalents = waitedForTalents + elapsed;
+	if waitedForTalents >= 2 then
+		ScrubBusterFrame:UnregisterEvent("INSPECT_TALENT_READY");
+		if ScrubBuster.tempUnit then
+			DEFAULT_CHAT_FRAME:AddMessage(RED_FONT_COLOR_CODE.."ScrubBuster: Timeout retrieving talent data for inspect. Chances are there is something wrong with the server you're playing on. Stats shown for current inspect will not include talent effects."..FONT_COLOR_CODE_CLOSE);
+			local name = UnitName(ScrubBuster.tempUnit);
+			ScrubBuster.stats[name] = {};
+			ScrubBuster.stats[name]["talentsDone"] = false;
+			ScrubBuster.stats[name]["level"], ScrubBuster.stats[name]["stats"], ScrubBuster.stats[name]["weaponStats"], ScrubBuster.stats[name]["itemStats"] = ScrubBuster:GetStats(ScrubBuster.tempUnit, ScrubBuster.tempSpecial);
+			ScrubBuster.tempUnit = nil;
+			ScrubBuster.tempSpecial = nil;
+			ScrubBuster_StatsDone(name);
+		end
+		waitedForTalents = 0;
+		waitingforTalents = false;
+		self:SetScript("OnUpdate", nil);
+	end
+end
+
 function ScrubBuster_OnLoad()
 	--we should probably do stuff here
 end
@@ -30,9 +61,11 @@ function ScrubBuster_OnEvent(event, ...)
 		if ScrubBuster.tempUnit then
 			local name = UnitName(ScrubBuster.tempUnit);
 			ScrubBuster.stats[name] = {};
+			ScrubBuster.stats[name]["talentsDone"] = true;
 			ScrubBuster.stats[name]["level"], ScrubBuster.stats[name]["stats"], ScrubBuster.stats[name]["weaponStats"], ScrubBuster.stats[name]["itemStats"] = ScrubBuster:GetStats(ScrubBuster.tempUnit, ScrubBuster.tempSpecial);
 			ScrubBuster.tempUnit = nil;
 			ScrubBuster.tempSpecial = nil;
+			waitingForTalents = false;
 			ScrubBuster_StatsDone(name);
 		end
 	end
@@ -277,8 +310,11 @@ function ScrubBuster:ScrubBust(target, refresh, special)
 	else --it's an inspect target and we're not refreshing, so we need to wait for talents to be done
 		ScrubBuster.tempUnit = target;
 		ScrubBuster.tempSpecial = special;
+		waitingForTalents = true;
+		waitedForTalents = 0;
+		ScrubBusterTimeout:SetScript("OnUpdate", ScrubBusterTimeout_OnUpdate);
 		ScrubBusterFrame:RegisterEvent("INSPECT_TALENT_READY");
-		NotifyInspect(target)
+		NotifyInspect(target);
 		--rest of this stuff will be handled by the talent ready eventhandler
 	end
 	return true;
