@@ -1035,7 +1035,7 @@ function SBStatFrame_SetStat(frame, index)
 		frame.tooltip2 = format(frame.tooltip2, health);
 	elseif index == 2 then
 		local attackPower = StatLogic:GetAPFromAgi(totalStat, unitClassID);
-		local crit = StatLogic:GetCritFromAgi(totalStat, unitClassID, unitLevel) + ScrubBuster.BaseCrit[unitClassID];
+		local crit = StatLogic:GetCritFromAgi(totalStat, unitClassID, level) + ScrubBuster.BaseCrit[unitClassID];
 		local armor = totalStat * 2;
 		if attackPower > 0 then
 			frame.tooltip2 = format(STAT_ATTACK_POWER, attackPower)..format(frame.tooltip2, crit, armor);
