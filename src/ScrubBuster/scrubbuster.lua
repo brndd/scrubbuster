@@ -590,6 +590,9 @@ function ScrubBuster:GetStats(target, spec)
 
 	local stats = ScrubBuster:InitStatsTable(); --see initStatsTable function for structure of table
 	
+	local canBlock = false; --whether they have the Block skill, without it they will have 0% block chance always
+	local canParry = false; --same as above except for parry
+	
 	local weaponStats = { --these are the raw weapon stats, whereas stats table has modified ones
 		mainHand = {
 			hasItem = false, --true if a weapon (or something at all) is found in this slot
@@ -690,16 +693,29 @@ function ScrubBuster:GetStats(target, spec)
 	--Block, classes with shields will essentially have 5% base block chance through passive skill Block
 	--this is Warriors, Paladins, Shamans
 	if class == "WARRIOR" or class == "PALADIN" or class == "SHAMAN" then
+		canBlock = true;
 		stats["defense"]["blockPercent"]["base"] = stats["defense"]["blockPercent"]["base"] + 5.00;
 	end
 	
 	--Parry, all melee classes except Shamans have this as a passive ability. Enhancement shamans get it
-	--through a talent which we'll check for when we check talents
+	--through a talent.
 	--warriors can get the ability at level 6, hunters and paladins at 8, rogues at 12. We'll just assume
 	--they have the ability as soon as they're of that level
-	if class == "WARRIOR" and level >= 6 then stats["defense"]["parryPercent"]["base"] = stats["defense"]["parryPercent"]["base"] + 5.00;
-	elseif (class == "HUNTER" or class == "PALADIN") and level >= 8 then stats["defense"]["parryPercent"]["base"]  = stats["defense"]["parryPercent"]["base"] + 5.00;
-	elseif class == "ROGUE" and level >= 12 then stats["defense"]["parryPercent"]["base"] = stats["defense"]["parryPercent"]["base"] + 5.00;
+	if class == "WARRIOR" and level >= 6 then
+		canParry = true;
+		stats["defense"]["parryPercent"]["base"] = stats["defense"]["parryPercent"]["base"] + 5.00;
+	elseif (class == "HUNTER" or class == "PALADIN") and level >= 8 then
+		canParry = true;
+		stats["defense"]["parryPercent"]["base"]  = stats["defense"]["parryPercent"]["base"] + 5.00;
+	elseif class == "ROGUE" and level >= 12 then
+		canParry = true;
+		stats["defense"]["parryPercent"]["base"] = stats["defense"]["parryPercent"]["base"] + 5.00;
+	elseif class == "SHAMAN" then
+		local _, _, _, _, talentRank = GetTalentInfo(2, 13, inspect);
+		if talentRank > 0 then
+			canParry = true;
+			stats["defense"]["parryPercent"]["base"] = stats["defense"]["parryPercent"]["base"] + 5.00;
+		end
 	end
 	
 	--defense, this is technically a skill and we can't get it, but generally everyone will have it at
@@ -1266,11 +1282,21 @@ function ScrubBuster:GetStats(target, spec)
 	--wands don't get damage bonuses...
 		tempRangedAvg = (stats["ranged"]["dmgMin"]["base"] + stats["ranged"]["dmgMax"]["base"]) / 2;
 	end
-	
 	stats["melee"]["mainHandDps"]["base"] = tempMhAvg / stats["melee"]["mainHandSpeed"]["base"];
 	stats["melee"]["offHandDps"]["base"] = tempOhAvg / stats["melee"]["offHandSpeed"]["base"];
 	stats["ranged"]["dps"]["base"] = tempRangedAvg / stats["ranged"]["speed"]["base"];
 
+	--If they can't block or parry, set their block or parry chance to 0
+	if not canBlock then
+		stats["defense"]["blockPercent"]["base"] = 0;
+		stats["defense"]["blockPercent"]["posMod"] = 0;
+		stats["defense"]["blockPercent"]["negMod"] = 0;
+	end
+	if not canParry then
+		stats["defense"]["parryPercent"]["base"] = 0;
+		stats["defense"]["parryPercent"]["posMod"] = 0;
+		stats["defense"]["parryPercent"]["negMod"] = 0;
+	end
 	
 	return level, stats, weaponStats, itemStats;
 end

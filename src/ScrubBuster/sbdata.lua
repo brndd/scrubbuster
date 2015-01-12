@@ -5591,6 +5591,7 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 			end
 		},
 		
+		--[[ Actually, we'll check for this elsewhere.
 		["Spirit Weapons"] = {
 			["prio"] = 2,
 			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
@@ -5599,7 +5600,7 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 				} };
 				return aura;
 			end
-		},
+		}, ]]
 		
 		["Mental Quickness"] = {
 			["prio"] = 3,
