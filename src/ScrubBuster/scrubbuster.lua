@@ -61,7 +61,6 @@ function ScrubBuster_OnEvent(event, ...)
 			ScrubBuster.stats[name] = {};
 			ScrubBuster.stats[name]["talentsDone"] = true;
 			waitingForTalents = false;
-			DEFAULT_CHAT_FRAME:AddMessage("Scanning with talents");
 			ScrubBuster:ScrubBust(ScrubBuster.tempUnit, true, ScrubBuster.tempSpecial);
 			--ScrubBuster.stats[name]["level"], ScrubBuster.stats[name]["stats"], ScrubBuster.stats[name]["weaponStats"], ScrubBuster.stats[name]["itemStats"] = ScrubBuster:GetStats(ScrubBuster.tempUnit, ScrubBuster.tempSpecial);
 			ScrubBuster.tempUnit = nil;
