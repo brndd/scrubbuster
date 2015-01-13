@@ -24,6 +24,29 @@
 	</Scripts>
 </GameTooltip>
 
+<Frame name="ScrubBusterTalentTimeoutFrame" parent="InspectPaperDollFrame" hidden="true">
+	<Size>
+		<AbsDimension x="160" y="12"/>
+	</Size>
+	<Anchors>
+		<Anchor point="CENTER">
+			<Offset>
+				<AbsDimension x="0" y="-3"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Layers>
+		<Layer level="OVERLAY">
+			<FontString name="$parent_Text" inherits="GameFontNormal" justifyH="LEFT" text="TALENT CHECK TIMEOUT">
+				<Size>
+					<AbsDimension x="160" y="12"/>
+				</Size>
+				<Color r="1.0" g="0" b="0"/>
+			</FontString>
+		</Layer>
+	</Layers>
+</Frame>
+
 <Frame name="ScrubBusterSpecialDropDownsFrame" parent="InspectPaperDollFrame">
 	<Size>
 		<AbsDimension x="200" y="30"/>

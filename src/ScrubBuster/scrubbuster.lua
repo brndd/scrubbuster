@@ -9,6 +9,7 @@ ScrubBuster = {
 
 stats = {}; --the table in which we'll gather the stats, organized by unit name
 tempUnit = nil;
+talentsTimeout = false; --whether talent check has timed out for current unit
 
 };
 
@@ -36,14 +37,11 @@ function ScrubBusterTimeout_OnUpdate(self, elapsed)
 	if waitedForTalents >= 2 then
 		ScrubBusterFrame:UnregisterEvent("INSPECT_TALENT_READY");
 		if ScrubBuster.tempUnit then
-			DEFAULT_CHAT_FRAME:AddMessage(RED_FONT_COLOR_CODE.."ScrubBuster: Timeout retrieving talent data for inspect. Chances are there is something wrong with the server you're playing on. Stats shown for current inspect will not include talent effects."..FONT_COLOR_CODE_CLOSE);
-			local name = UnitName(ScrubBuster.tempUnit);
-			ScrubBuster.stats[name] = {};
-			ScrubBuster.stats[name]["talentsDone"] = false;
-			ScrubBuster.stats[name]["level"], ScrubBuster.stats[name]["stats"], ScrubBuster.stats[name]["weaponStats"], ScrubBuster.stats[name]["itemStats"] = ScrubBuster:GetStats(ScrubBuster.tempUnit, ScrubBuster.tempSpecial);
+			DEFAULT_CHAT_FRAME:AddMessage(RED_FONT_COLOR_CODE.."ScrubBuster: Timeout retrieving talent data for inspect. Chances are there is something wrong with the server you're playing on. Talent effects might not be calculated."..FONT_COLOR_CODE_CLOSE);
+			ScrubBuster.talentsTimeout = true;
+			ScrubBusterTalentTimeoutFrame:Show();
 			ScrubBuster.tempUnit = nil;
 			ScrubBuster.tempSpecial = nil;
-			ScrubBuster_StatsDone(name);
 		end
 		waitedForTalents = 0;
 		waitingforTalents = false;
@@ -62,10 +60,12 @@ function ScrubBuster_OnEvent(event, ...)
 			local name = UnitName(ScrubBuster.tempUnit);
 			ScrubBuster.stats[name] = {};
 			ScrubBuster.stats[name]["talentsDone"] = true;
-			ScrubBuster.stats[name]["level"], ScrubBuster.stats[name]["stats"], ScrubBuster.stats[name]["weaponStats"], ScrubBuster.stats[name]["itemStats"] = ScrubBuster:GetStats(ScrubBuster.tempUnit, ScrubBuster.tempSpecial);
+			waitingForTalents = false;
+			DEFAULT_CHAT_FRAME:AddMessage("Scanning with talents");
+			ScrubBuster:ScrubBust(ScrubBuster.tempUnit, true, ScrubBuster.tempSpecial);
+			--ScrubBuster.stats[name]["level"], ScrubBuster.stats[name]["stats"], ScrubBuster.stats[name]["weaponStats"], ScrubBuster.stats[name]["itemStats"] = ScrubBuster:GetStats(ScrubBuster.tempUnit, ScrubBuster.tempSpecial);
 			ScrubBuster.tempUnit = nil;
 			ScrubBuster.tempSpecial = nil;
-			waitingForTalents = false;
 			ScrubBuster_StatsDone(name);
 		end
 	end
@@ -301,6 +301,7 @@ function ScrubBuster:ScrubBust(target, refresh, special)
 	
 	if UnitIsUnit("player", target) then
 		ScrubBuster.stats[name] = {};
+		ScrubBuster.talentsTimeout = false;
 		ScrubBuster.stats[name]["level"], ScrubBuster.stats[name]["stats"], ScrubBuster.stats[name]["weaponStats"], ScrubBuster.stats[name]["itemStats"] = ScrubBuster:GetStats(target, special);
 		ScrubBuster_StatsDone(name);
 	elseif refresh then
@@ -308,6 +309,14 @@ function ScrubBuster:ScrubBust(target, refresh, special)
 		ScrubBuster.stats[name]["level"], ScrubBuster.stats[name]["stats"], ScrubBuster.stats[name]["weaponStats"], ScrubBuster.stats[name]["itemStats"] = ScrubBuster:GetStats(target, special);
 		ScrubBuster_StatsDone(name);
 	else --it's an inspect target and we're not refreshing, so we need to wait for talents to be done
+		ScrubBuster.talentsTimeout = false;
+		
+		--actually, even if we can't get the talents let's get their stats anyway, and then get them
+		--again when talents become available
+		ScrubBuster.stats[name] = {};
+		ScrubBuster.stats[name]["level"], ScrubBuster.stats[name]["stats"], ScrubBuster.stats[name]["weaponStats"], ScrubBuster.stats[name]["itemStats"] = ScrubBuster:GetStats(target, special);
+		ScrubBuster_StatsDone(name);
+		
 		ScrubBuster.tempUnit = target;
 		ScrubBuster.tempSpecial = special;
 		waitingForTalents = true;

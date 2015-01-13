@@ -77,6 +77,7 @@ function SBInspectFrame_Show(unit)
 	SBAmmoSlot_SelectedQuiver = nil;
 	SBAmmoSlot_QuiverDone = false;
 	
+	--ScrubBuster.talentsTimeout = false;
 	
 	ScrubBuster:ScrubBust(unit);
 end
@@ -111,6 +112,8 @@ function SBInspectFrame_UnitChanged()
 		ScrubBusterAmmoSlot:Hide();
 	end
 	
+	--ScrubBuster.talentsTimeout = false;
+	
 	ScrubBuster:ScrubBust(unit);
 end
 
@@ -128,7 +131,13 @@ function SBInspectFrame_Update()
 	local name = UnitName(unit);
 	local level = UnitLevel(unit);
 	if level == -1 then level = 70 end
-		
+	
+	if ScrubBuster.talentsTimeout then --show or hide the talents timeout warning
+		ScrubBusterTalentTimeoutFrame:Show();
+	else
+		ScrubBusterTalentTimeoutFrame:Hide();
+	end
+	
 	--Change the preselected tab of the stat dropdown menu according to inspected unit's class
 	if not SBInspectFrame_LeftStatDropDownSelection or not SBInspectFrame_RightStatDropDownSelection then
 		SBInspectFrame_LeftStatDropDownSelection = "PLAYERSTAT_BASE_STATS";
