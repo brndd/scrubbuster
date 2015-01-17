@@ -778,10 +778,6 @@ function ScrubBuster:GetStats(target, spec)
 		stats["melee"]["attackPower"]["base"] = stats["melee"]["attackPower"]["base"] + level * 3;
 	elseif class == "SHAMAN" or class == "ROGUE" or class == "HUNTER" then
 		stats["melee"]["attackPower"]["base"] = stats["melee"]["attackPower"]["base"] + level * 2;
-	elseif class == "DRUID" and special["druidForm"] == "cat" then
-		stats["melee"]["attackPower"]["base"] = stats["melee"]["attackPower"]["base"] + level * 2;
-	elseif class == "DRUID" and special["druidForm"] == "bear" then
-		stats["melee"]["attackPower"]["base"] = stats["melee"]["attackPower"]["base"] + level * 3;
 	end
 	
 	--Ranged attack power, some classes get this from levels
@@ -1020,10 +1016,12 @@ function ScrubBuster:GetStats(target, spec)
 		stats["melee"]["mainHandSpeed"]["base"] = 2.50;
 		stats["melee"]["mainHandDmgMin"]["base"] = temp * 0.85 * 2.50;
 		stats["melee"]["mainHandDmgMax"]["base"] = temp * 1.25 * 2.50;
+		stats["melee"]["attackPower"]["posMod"] = stats["melee"]["attackPower"]["posMod"] + temp * 3;
 	elseif special["druidForm"] == "cat" then
 		stats["melee"]["mainHandSpeed"]["base"] = 1.00;
 		stats["melee"]["mainHandDmgMin"]["base"] = temp * 0.85;
 		stats["melee"]["mainHandDmgMax"]["base"] = temp * 1.25;
+		stats["melee"]["attackPower"]["posMod"] = stats["melee"]["attackPower"]["posMod"] + temp * 2;
 	end
 
 	--------------------------------------------------
