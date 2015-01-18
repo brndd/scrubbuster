@@ -1185,6 +1185,25 @@ function ScrubBuster:GetStats(target, spec)
 	temp["critReduction"]["base"] = temp["critReduction"]["base"] + tempResEffect;
 	
 	
+	
+	------------------------
+	---REST OF THE THINGS---
+	------------------------
+	
+
+	--priority 3 auras, aka the special needs auras
+	stats = ScrubBuster:AddAuras(stats, auras[3], weaponStats, itemStats, level, class, special);
+	
+	--Apply non-primary stat multipliers
+	for k,v in pairs(stats) do
+		if k ~= "primary" then
+			for k2,v2 in pairs(v) do
+				v2["base"] = v2["base"] * v2["mult"] + (v2["posMod"] * v2["mult"] - v2["posMod"]);
+			end
+		end
+	end
+	
+	
 	--Add common expertise to mainhand and offhand expertises
 	local temp = stats["melee"]
 	temp["mainHandExpertise"]["base"] = temp["mainHandExpertise"]["base"] + temp["expertise"]["base"];
@@ -1194,7 +1213,6 @@ function ScrubBuster:GetStats(target, spec)
 	temp["offHandExpertise"]["posMod"] = temp["offHandExpertise"]["posMod"] + temp["expertise"]["posMod"];
 	temp["offHandExpertise"]["negMod"] = temp["offHandExpertise"]["negMod"] + temp["expertise"]["negMod"];
 	
-
 	--Add common physical hit chance to melee and ranged hit chances
 	temp["hitPercent"]["base"] = temp["hitPercent"]["base"] + stats["physical"]["hitPercent"]["base"];
 	temp["hitPercent"]["posMod"] = temp["hitPercent"]["posMod"] + stats["physical"]["hitPercent"]["posMod"];
@@ -1224,6 +1242,7 @@ function ScrubBuster:GetStats(target, spec)
 		stat["base"] = stat["base"] + tempBase;
 		stat["posMod"] = stat["posMod"] + tempPosMod;
 		stat["negMod"] = stat["negMod"] + tempNegMod;
+		DEFAULT_CHAT_FRAME:AddMessage("School: "..schools[i]..", base: "..stat["base"]..", posMod: "..stat["posMod"]);
 	end
 	
 	--do the same for crit chance
@@ -1248,21 +1267,6 @@ function ScrubBuster:GetStats(target, spec)
 		stat["negMod"] = stat["negMod"] + tempNegMod;
 	end
 	
-	--priority 3 auras, aka the special needs auras
-	stats = ScrubBuster:AddAuras(stats, auras[3], weaponStats, itemStats, level, class, special);
-	
-	--Apply non-primary stat multipliers
-	for k,v in pairs(stats) do
-		if k ~= "primary" then
-			for k2,v2 in pairs(v) do
-				v2["base"] = v2["base"] * v2["mult"] + (v2["posMod"] * v2["mult"] - v2["posMod"]);
-			end
-		end
-	end
-	
-	------------------------
-	---REST OF THE THINGS---
-	------------------------
 	
 	--Attack power to damage
 	--AP/14*speed + weapondamage is the final damage as appears on the character sheet
