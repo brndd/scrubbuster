@@ -1649,6 +1649,13 @@ function SBStatFrame_SetMeleeCritChance(frame)
 	local text = getglobal(frame:GetName().."StatText");
 	local critTable = ScrubBuster["stats"][name]["stats"]["melee"]["critPercent"];
 	local critChance = critTable["base"] + critTable["posMod"] + critTable["negMod"];
+	critTable = ScrubBuster["stats"][name]["stats"]["melee"]["mainHandCritPercent"];
+	local mhCritChance = critTable["base"] + critTable["posMod"] + critTable["negMod"];
+	critTable = ScrubBuster["stats"][name]["stats"]["melee"]["offHandCritPercent"];
+	local ohCritChance = critTable["base"] + critTable["posMod"] + critTable["negMod"];
+	
+	critChance = math.max(critChance, mhCritChance, ohCritChance);
+	
 	critChance = format("%.2f%%", critChance);
 	text:SetText(critChance);
 	frame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..MELEE_CRIT_CHANCE.." "..critChance..FONT_COLOR_CODE_CLOSE;

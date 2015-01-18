@@ -1204,6 +1204,15 @@ function ScrubBuster:GetStats(target, spec)
 	temp["hitPercent"]["posMod"] = temp["hitPercent"]["posMod"] + stats["physical"]["hitPercent"]["posMod"];
 	temp["hitPercent"]["negMod"] = temp["hitPercent"]["negMod"] + stats["physical"]["hitPercent"]["negMod"];
 	
+	--Add common melee crit chance to hand specific crit chances
+	local temp = stats["melee"];
+	temp["mainHandCritPercent"]["base"] = temp["mainHandCritPercent"]["base"] + temp["critPercent"]["base"];
+	temp["offHandCritPercent"]["base"] = temp["offHandCritPercent"]["base"] + temp["critPercent"]["base"];
+	temp["mainHandCritPercent"]["posMod"] = temp["mainHandCritPercent"]["posMod"] + temp["critPercent"]["posMod"];
+	temp["offHandCritPercent"]["posMod"] = temp["offHandCritPercent"]["posMod"] + temp["critPercent"]["posMod"];
+	temp["mainHandCritPercent"]["negMod"] = temp["mainHandCritPercent"]["negMod"] + temp["critPercent"]["negMod"];
+	temp["offHandCritPercent"]["negMod"] = temp["offHandCritPercent"]["negMod"] + temp["critPercent"]["negMod"];
+	
 	
 	--Add general spell damage to specific school spell damages
 	local schools = { "holy", "fire", "nature", "frost", "shadow", "arcane" };
