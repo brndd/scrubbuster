@@ -14,7 +14,7 @@ scanning the target's equipment tooltips for bonuses. A modified version of Bonu
 in the download, and must be installed for the addon to work properly.
 
 # Installation
-###[**Click to download**](https://github.com/brndd/scrubbuster/raw/master/releases/ScrubBuster_v0.6.6.7.7z)
+###[**Click to download**](https://github.com/brndd/scrubbuster/raw/master/releases/ScrubBuster_v0.6.9.7z)
 Download ScrubBuster, and place the archive's contents in the Interface\AddOns\ folder, so that two new
 folders appear in the AddOns directory: BonusScanner and ScrubBuster.
 
