@@ -1242,7 +1242,6 @@ function ScrubBuster:GetStats(target, spec)
 		stat["base"] = stat["base"] + tempBase;
 		stat["posMod"] = stat["posMod"] + tempPosMod;
 		stat["negMod"] = stat["negMod"] + tempNegMod;
-		DEFAULT_CHAT_FRAME:AddMessage("School: "..schools[i]..", base: "..stat["base"]..", posMod: "..stat["posMod"]);
 	end
 	
 	--do the same for crit chance
