@@ -39,3 +39,24 @@ There are a couple of differences to the character sheet, stemming from limitati
 - Talents and druid forms that increase armour contribution from items incorrectly apply to armour enchantments too. As far as I'm aware this is impossible to properly fix.
 - If you're playing on private servers, there may be some inconsistencies due to the server having incorrect configuration. This is probably an issue with the server, not the addon, but if you come across stuff like this let me know anyway.
 - **Importantly**, because the addon works partially by scanning tooltips which depend on localisation, non-English localisations are not properly supported and probably never will be. Use the English client.
+
+# Notice for Skinner users
+Skinner shuffles the inspect frame around a bit, causing various elements to overlap each other if used with ScrubBuster.
+Until I get around to writing a proper fix for this (don't hold your breath), you can modify Skinner a bit to avoid the issue.
+
+Open UIElements1.lua in the Skinner folder. Find the following lines (should start at line 647):
+```lua
+	self:moveObject(InspectHeadSlot, nil, nil, "+", 20)
+	self:moveObject(InspectHandsSlot, "-", 15, "+", 20)
+	self:moveObject(InspectMainHandSlot, nil, nil, "-", 38)
+```
+
+Replace them with:
+
+```lua
+	self:moveObject(InspectHeadSlot, nil, nil, "+", 20)
+	self:moveObject(InspectHandsSlot, "-", 5, "+", 20)
+	self:moveObject(InspectMainHandSlot, nil, 0, "-", 65)
+```
+
+Thanks to Penol for this!
