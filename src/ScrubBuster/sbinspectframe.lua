@@ -1,6 +1,10 @@
 ---------------UI frame stuff----------------------------
 InspectModelFrame:SetHeight(215);
 
+
+--Skinner fix
+local skinnerEnabled = false;
+
 local ClassNameToID = {
 	"WARRIOR",
 	"PALADIN",
@@ -65,6 +69,20 @@ function SBInspectFrame_OnEvent(self, event)
 end
 
 function SBInspectFrame_Show(unit)
+	--Skinner fix
+	if skinnerEnabled == false then
+		skinnerEnabled = IsAddOnLoaded("Skinner");
+	end
+	if skinnerEnabled then
+		if Skinner.initialized.InspectUI then
+			ScrubBusterAttributesFrame:SetPoint("TOPLEFT", 58, -295);
+			ScrubBusterResistanceFrame:SetPoint("TOPRIGHT", InspectPaperDollFrame, "TOPLEFT", 288, -54);
+			InspectModelFrame:SetPoint("TOPLEFT", 65, -75);
+			InspectMainHandSlot:SetPoint("TOPLEFT", InspectPaperDollFrame, "BOTTOMLEFT", 122, 65);
+		end
+	end
+	skinnerEnabled = nil;
+
 	--ScrubBuster_InspectStats = {}; --clear the inspect stats
 	--DEFAULT_CHAT_FRAME:AddMessage("Show");
 	SBInspectFrame_LeftStatDropDownSelection = nil;
@@ -594,7 +612,7 @@ function SBAmmoSelectionFrame_OnShow()
 	end
 	local weapontype = ScrubBuster["stats"][name]["weaponStats"]["ranged"]["weaponType"][2];
 	local ammotype;
-	if weapontype == "BOW" or weaponType == "CROSSBOW" then
+	if weapontype == "BOW" or weapontype == "CROSSBOW" then
 		ammotype = "arrow";
 	elseif weapontype == "GUN" then
 		ammotype = "bullet";
