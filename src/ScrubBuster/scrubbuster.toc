@@ -1,7 +1,7 @@
 ## Interface: 20400
 ## Title: ScrubBuster
 ## Notes: Displays inspected player's stats in the inspect window
-## Version: 1.0
+## Version: 1.0.1
 ## Author: burneddi
 ## Dependencies: BonusScanner, Blizzard_InspectUI
 ## OptionalDeps: Ace2, StatLogicLib
