@@ -1077,7 +1077,8 @@ function ScrubBuster:GetStats(target, spec)
 	stats["defense"]["armor"]["base"] = stats["defense"]["armor"]["base"] + (tempAgi * 2);
 	stats["melee"]["critPercent"]["base"] = stats["melee"]["critPercent"]["base"] + tempAgi * ScrubBuster.CritPerAgi[level][classID]
 	stats["ranged"]["critPercent"]["base"] = stats["ranged"]["critPercent"]["base"] + tempAgi * ScrubBuster.CritPerAgi[level][classID]
-	stats["defense"]["dodgePercent"]["base"] = stats["defense"]["dodgePercent"]["base"] + tempAgi / ScrubBuster.AgiDodgeRatio[classID];
+	--dodge from agility uses the same multiplier as crit per agility, except some classes seem to have an extra multiplier
+	stats["defense"]["dodgePercent"]["base"] = stats["defense"]["dodgePercent"]["base"] + tempAgi * ScrubBuster.CritPerAgi[level][classID] * ScrubBuster.CritPerAgiToDodge[classID];
 	
 
 	--Stamina--

@@ -4424,6 +4424,20 @@ ScrubBuster.BaseDodge = { --Base dodge, by class ID
 	0.7580, 0.6520, -5.4500, -0.5900, 3.1830, 1.6750, 3.4575, 2.0350, -1.8720,
 };
 
+ScrubBuster.CritPerAgiToDodge = { --Dodge per agility uses the same values as crit per agility, but some classes have a multiplier
+	--copied from cmangos src/game/Player.cpp so take it with a grain of salt... either way, better than what we used to have
+	1.1, --Warrior
+	1.0, --Paladin
+	1.6, --Hunter
+	2.0, --Rogue
+	1.0, --Priest
+	1.0, --Shaman
+	1.0, --Mage
+	1.0, --Warlock
+	1.7, --Druid
+};
+
+--[[
 ScrubBuster.AgiDodgeRatio = {
 	30, --Warrior
 	25, --Paladin
@@ -4435,6 +4449,7 @@ ScrubBuster.AgiDodgeRatio = {
 	25, --Warlock
 	14.7059, --Druid (why is it weird number daddy)
 };
+]]
 
 ScrubBuster.BaseSpellCrit = {
 	0, --Warrior
