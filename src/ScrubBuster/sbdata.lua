@@ -4959,7 +4959,7 @@ ScrubBuster.TalentBonuses = { --effects of all talents that affect stats, in our
 		["Divine Intellect"] = {
 			["prio"] = 1,
 			["func"] = function(rank, stats, weaponStats, itemStats, level, special)
-				local aura = { ["primary"] = { ["str"] = { ["mult"] = 1 + 0.02 * rank } } };
+				local aura = { ["primary"] = { ["int"] = { ["mult"] = 1 + 0.02 * rank } } };
 				return aura;
 			end
 		},
